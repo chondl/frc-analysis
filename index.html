@@ -1,8 +1,47 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=./longevity/team-longevity.html">
-<link rel="canonical" href="./longevity/team-longevity.html">
-<title>FRC Team Longevity</title>
-<p style="font-family:system-ui,sans-serif;padding:2rem">
-  Redirecting to <a href="./longevity/team-longevity.html">FRC Team Longevity →</a>
-</p>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FRC Analysis</title>
+<style>
+  :root { color-scheme: light dark; --bg:#f9f9f7; --card:#fcfcfb; --text:#0b0b0b; --muted:#52514e; --border:rgba(11,11,11,.12); --accent:#2a78d6; }
+  @media (prefers-color-scheme:dark){ :root{ --bg:#0d0d0d; --card:#1a1a19; --text:#fff; --muted:#c3c2b7; --border:rgba(255,255,255,.12); --accent:#3987e5; } }
+  * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:720px; margin:0 auto; padding:64px 24px; }
+  h1 { font-size:26px; letter-spacing:-.02em; margin:0 0 6px; }
+  p.sub { color:var(--muted); margin:0 0 36px; }
+  a.card { display:block; text-decoration:none; color:inherit; background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:20px 22px; margin-bottom:16px; transition:border-color .12s, transform .12s; }
+  a.card:hover { border-color:var(--accent); transform:translateY(-1px); }
+  a.card h2 { font-size:18px; margin:0 0 4px; letter-spacing:-.01em; }
+  a.card h2 span { color:var(--accent); }
+  a.card p { color:var(--muted); font-size:14px; margin:0; }
+  .foot { color:var(--muted); font-size:12.5px; margin-top:32px; }
+  .foot a { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>FRC Analysis</h1>
+  <p class="sub">Interactive analyses of FIRST Robotics Competition team data, 2002–2026. Supporting material —
+    figures presented straight.</p>
+
+  <a class="card" href="./longevity/team-longevity.html">
+    <h2>Team Health &amp; Longevity <span>→</span></h2>
+    <p>Team survival and the acquisition-vs-retention question: cohort survival, gains and losses, retention by
+      team age, and the aging of the field — nationally and by area.</p>
+  </a>
+
+  <a class="card" href="./competitiveness/competitiveness.html">
+    <h2>Competitiveness &amp; Survival <span>→</span></h2>
+    <p>How a team's competitive standing <em>within its region</em> relates to how long it lasts: the path to
+      long-term health, recovery after a rough start, and slumps among established teams.</p>
+  </a>
+
+  <p class="foot">Data: <a href="https://www.thebluealliance.com/">The Blue Alliance</a> and
+    <a href="https://statbotics.io/">Statbotics</a>. Source: <a href="https://github.com/chondl/frc-analysis">github.com/chondl/frc-analysis</a>.</p>
+</div>
+</body>
+</html>

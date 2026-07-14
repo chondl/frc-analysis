@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FRC Competitiveness &amp; Survival — 2002–2026</title>
+<style>
+  :root {
+    --page:#f9f9f7; --surface:#fcfcfb; --text:#0b0b0b; --text2:#52514e;
+    --muted:#898781; --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,.10); --accent:#2a78d6;
+  }
+  :root[data-theme="dark"] {
+    --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10); --accent:#3987e5;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10); --accent:#3987e5; } }
+  * { box-sizing:border-box; } html,body { margin:0; }
+  body { background:var(--page); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased; }
+  a { color:var(--accent); }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 20px 80px; }
+  header.top { position:sticky; top:0; z-index:20; background:var(--page); border-bottom:1px solid var(--border); backdrop-filter:blur(6px); }
+  header.top .inner { max-width:1080px; margin:0 auto; padding:14px 20px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  header.top h1 { font-size:19px; margin:0; letter-spacing:-.01em; }
+  header.top .src { color:var(--muted); font-size:12.5px; }
+  header.top .spacer { flex:1; }
+  .btn { font:inherit; font-size:13px; color:var(--text2); background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:5px 11px; cursor:pointer; text-decoration:none; }
+  .btn:hover { border-color:var(--muted); }
+  .controls { display:flex; gap:22px; flex-wrap:wrap; align-items:center; padding:16px 0 4px; color:var(--text2); font-size:13px; }
+  .ctl { display:flex; align-items:center; gap:8px; }
+  .ctl label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .seg button { font:inherit; font-size:12.5px; border:0; background:var(--surface); color:var(--text2); padding:5px 12px; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:#fff; }
+  select { font:inherit; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:7px; padding:4px 8px; }
+  details.method { margin:8px 0 4px; border:1px solid var(--border); border-radius:10px; background:var(--surface); }
+  details.method summary { cursor:pointer; padding:10px 14px; font-size:13px; color:var(--text2); font-weight:600; }
+  details.method .body { padding:0 16px 14px; font-size:13px; color:var(--text2); }
+  details.method .body b { color:var(--text); }
+  .intro { color:var(--text2); font-size:14px; max-width:74ch; margin:18px 0 0; }
+  section.view { margin-top:44px; }
+  section.view h2 { font-size:17px; margin:0 0 4px; letter-spacing:-.01em; }
+  section.view .lede { color:var(--text2); font-size:13.5px; margin:0 0 14px; max-width:72ch; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 14px 10px; }
+  .chart-scroll { overflow-x:auto; }
+  svg { display:block; max-width:100%; }
+  .axis text { fill:var(--muted); font-size:11px; } .axis line, .axis path { stroke:var(--baseline); shape-rendering:crispEdges; }
+  .grid line { stroke:var(--grid); shape-rendering:crispEdges; } .grid path { stroke:none; }
+  .anno { fill:var(--text2); font-size:11px; } .anno-line { stroke:var(--muted); stroke-dasharray:2 3; }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; padding:10px 4px 2px; font-size:12.5px; color:var(--text2); }
+  .legend .k { display:inline-flex; align-items:center; gap:6px; } .legend .sw { width:11px; height:11px; border-radius:3px; }
+  .note { color:var(--muted); font-size:12px; margin-top:8px; }
+  .tt { position:fixed; pointer-events:none; z-index:50; background:var(--surface); border:1px solid var(--border);
+    border-radius:9px; padding:8px 10px; font-size:12.5px; color:var(--text); box-shadow:0 6px 24px rgba(0,0,0,.18); opacity:0; transition:opacity .08s; max-width:280px; }
+  .tt .row { display:flex; justify-content:space-between; gap:14px; } .tt .row span:last-child { font-variant-numeric:tabular-nums; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <h1>FRC Competitiveness &amp; Survival</h1>
+    <span class="src" id="src">2002–2026 · Statbotics + The Blue Alliance</span>
+    <span class="spacer"></span>
+    <a class="btn" href="../longevity/team-longevity.html">← Team Longevity</a>
+    <button class="btn" id="theme">Theme: Auto</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="intro">Does a team's competitive success <b>within its region</b> relate to how long it survives?
+    Competitiveness here is a team's EPA percentile among the teams in its region that season — <b>not</b> global
+    rank, since regions differ in strength. Buckets: <b style="color:#e34948">Bottom 10%</b>,
+    <b style="color:#eda100">Below median</b>, <b style="color:#2a78d6">Above median</b> of the region.</p>
+
+  <div class="controls">
+    <div class="ctl"><label>Region</label><select id="region"></select><span class="note" id="regionN" style="margin:0"></span></div>
+  </div>
+
+  <details class="method">
+    <summary>Definitions, regions &amp; honest limits</summary>
+    <div class="body">
+      <p><b>Region-relative standing</b> = a team's rank by EPA among all teams that competed in its region that
+      season (region-years with &lt;15 teams are skipped). Ten balanced regions: Michigan, California, Texas each
+      on their own; Northeast, Mid-Atlantic, Southeast, Midwest, West; Canada; and International (all non-US/Canada).</p>
+      <p><b>Survival / lifespan</b> = first→last season played (gap-tolerant), as in the longevity tool. Recent
+      cohorts' survival is provisional. <b>Bottom 10 / Below median / Above median</b> = region percentile
+      &lt;10% / 10–50% / ≥50%.</p>
+      <p><b>Honest limits:</b> this is correlation. EPA likely reflects program resources (mentors, funding, student
+      pipeline) as much as it drives survival — the data shows struggling teams are at higher risk and that
+      competitive <i>recovery</i> tracks survival, but cannot show that <i>providing</i> support would cause recovery.
+      New teams skew low (ranked against veterans). <b>2020 EPA is sparse and 2021 is absent</b> (COVID).</p>
+      <p class="note" id="pull"></p>
+    </div>
+  </details>
+
+  <section class="view" id="v1">
+    <h2>1 · Early standing and the odds of lasting</h2>
+    <p class="lede">Teams grouped by their local-standing <b>decile</b> over their first three seasons, and the share
+      that reach year 5. The climb is smooth, with a distinct drop at the bottom decile.</p>
+    <div class="card">
+      <div class="controls" style="padding-top:0"><div class="ctl"><label>Horizon</label>
+        <div class="seg" id="horizon"><button data-h="5" aria-pressed="true">Reach year 5</button><button data-h="10" aria-pressed="false">Reach year 10</button></div></div></div>
+      <div class="chart-scroll"><div id="c1"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v2">
+    <h2>2 · Survival curves by early standing</h2>
+    <p class="lede">The same idea as retention curves: the share of a cohort still active as it ages, split by early
+      local standing. Higher early standing, longer survival — at every age.</p>
+    <div class="card"><div class="chart-scroll"><div id="c2"></div></div><div class="legend" id="l2"></div></div>
+  </section>
+
+  <section class="view" id="v3">
+    <h2>3 · It isn't just age</h2>
+    <p class="lede">The gap holds within every age band — a bottom-decile team is less likely to be around in three
+      years than an above-median team of the same age.</p>
+    <div class="card"><div class="chart-scroll"><div id="c3"></div></div><div class="legend" id="l3"></div></div>
+  </section>
+
+  <section class="view" id="v4">
+    <h2>4 · A rough rookie year isn't destiny</h2>
+    <p class="lede">Teams that started in the bottom 10% of their region in year 1, tracked by where they got to in
+      years 2–4. Those that climbed to the top half survive nearly as well as teams that started strong (dashed
+      benchmark). Recent standing matters more than the rookie year.</p>
+    <div class="card"><div class="chart-scroll"><div id="c4"></div></div><div class="legend" id="l4"></div></div>
+  </section>
+
+  <section class="view" id="v5">
+    <h2>5 · Established teams &amp; slumps</h2>
+    <p class="lede">For teams four or more years in, a bottom-decile season is a real risk marker — but staying stuck
+      longer barely compounds it, and a single down year already carries most of the signal. Teams that climb back
+      out the next season return close to the baseline.</p>
+    <div class="card">
+      <div class="note" style="margin:0 0 6px">Veteran (age 4+) survival to +3 seasons, by consecutive bottom-decile years</div>
+      <div class="chart-scroll"><div id="c5"></div></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="note" style="margin:0 0 6px">After a veteran's one-off bottom-decile year: climbed back out vs stayed down (survival to +2 more)</div>
+      <div class="chart-scroll"><div id="c5b"></div></div>
+    </div>
+  </section>
+
+  <p class="note" style="margin-top:40px">Data: EPA from Statbotics, participation from The Blue Alliance. Presented
+    as supporting material — the figures are shown straight, for you to interpret.</p>
+</div>
+
+<div class="tt" id="tt"></div>
+<!-- D3 -->
+<!-- COMPUTE -->
+<!-- DATA -->
+<script>
+(function(){
+  const { records, meta } = buildRecords(window.DATA);
+  const START = meta.start, END = meta.end, MAXAGE = 16;
+  document.getElementById("pull").textContent = "Pull date: " + (meta.pullDate || "unknown") + ". Window " + START + "–" + END + ".";
+
+  const state = { theme:"auto", region:null, horizon:5 };
+  function P() {
+    const dark = document.documentElement.getAttribute("data-theme")==="dark" ||
+      (!document.documentElement.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+    return { dark,
+      text:dark?"#fff":"#0b0b0b", text2:dark?"#c3c2b7":"#52514e", muted:"#898781",
+      grid:dark?"#2c2c2a":"#e1e0d9", baseline:dark?"#383835":"#c3c2b7", surface:dark?"#1a1a19":"#fcfcfb",
+      buckets:[ dark?"#e66767":"#e34948", dark?"#c98500":"#eda100", dark?"#3987e5":"#2a78d6" ],
+      benchmark:"#898781", ramp:["#cde2fb","#9ec5f4","#6da7ec","#3987e5","#256abf","#184f95","#0d366b"] };
+  }
+  const bucketOf = p => p<0.10?0:(p<0.50?1:2);
+  const BL = ["Bottom 10%","Below median","Above median"];
+
+  const tt = document.getElementById("tt");
+  function tip(html, ev){ tt.innerHTML=html; tt.style.opacity=1; const pad=14; let x=ev.clientX+pad,y=ev.clientY+pad;
+    const r=tt.getBoundingClientRect(); if(x+r.width>innerWidth)x=ev.clientX-r.width-pad; if(y+r.height>innerHeight)y=ev.clientY-r.height-pad;
+    tt.style.left=x+"px"; tt.style.top=y+"px"; }
+  const hide = ()=>tt.style.opacity=0;
+  const pctv = c => c && c.n ? c.s/c.n : 0;
+
+  const M = { top:18, right:20, bottom:34, left:46 };
+  function frame(sel, height){
+    const el=document.querySelector(sel); el.innerHTML="";
+    const W=Math.max(el.clientWidth||760,520), H=height;
+    const svg=d3.select(el).append("svg").attr("width",W).attr("height",H).attr("viewBox",`0 0 ${W} ${H}`);
+    const iw=W-M.left-M.right, ih=H-M.top-M.bottom;
+    const g=svg.append("g").attr("transform",`translate(${M.left},${M.top})`);
+    return { svg,g,iw,ih,p:P() };
+  }
+  function yGrid(g,y,iw,fmt){ g.append("g").attr("class","grid").call(d3.axisLeft(y).ticks(5).tickSize(-iw).tickFormat("")).select(".domain").remove();
+    g.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(5).tickFormat(fmt||d3.format("~s"))).select(".domain").remove(); }
+  function legend(sel, items){ const el=document.querySelector(sel); el.innerHTML="";
+    items.forEach(([lab,c,dash])=>{ const k=document.createElement("span"); k.className="k";
+      k.innerHTML=`<span class="sw" style="background:${dash?`repeating-linear-gradient(90deg,${c},${c} 3px,transparent 3px,transparent 6px)`:c}"></span>${lab}`; el.appendChild(k); }); }
+
+  // ---- series (recomputed on region change) ----
+  let recs, G, EC, AC, RC, VS, CO;
+  function compute(){
+    recs = state.region==null ? records : records.filter(r=>r.g===state.region);
+    G = gradient(recs, START, END);
+    EC = earlyCurves(recs, START, END, MAXAGE);
+    AC = ageControlled(recs, START, END);
+    RC = recovery(recs, START, END, MAXAGE);
+    VS = veteranStreak(recs, START, END).g3;
+    CO = veteranClimbOut(recs, START, END);
+  }
+
+  // ---- V1 gradient ----
+  function v1(){
+    const { g,iw,ih,p } = frame("#c1", 300);
+    const key = state.horizon===5 ? ["s5","n5"] : ["s10","n10"];
+    const data = d3.range(10).map(d=>({ d, val: G[d][key[1]]?G[d][key[0]]/G[d][key[1]]:0, n:G[d][key[1]] }));
+    const x=d3.scaleBand().domain(d3.range(10)).range([0,iw]).padding(0.22);
+    const y=d3.scaleLinear().domain([0,1]).range([ih,0]);
+    yGrid(g,y,iw,d3.format(".0%"));
+    g.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`).call(d3.axisBottom(x).tickFormat(d=>`${d*10}–${d*10+10}`)).selectAll("text").attr("dy","0.9em").attr("font-size","10");
+    g.append("text").attr("class","anno").attr("x",iw).attr("y",ih+30).attr("text-anchor","end").text("early local-standing percentile →");
+    data.forEach(dd=>{ const col=p.buckets[bucketOf((dd.d+0.5)/10)];
+      g.append("rect").attr("x",x(dd.d)).attr("y",y(dd.val)).attr("width",x.bandwidth()).attr("height",ih-y(dd.val)).attr("rx",3).attr("fill",col)
+        .on("mousemove",ev=>tip(`<b>${dd.d*10}–${dd.d*10+10}% of region</b>
+          <div class="row"><span>Reach year ${state.horizon}</span><span>${d3.format(".0%")(dd.val)}</span></div>
+          <div class="row"><span>Teams</span><span>${dd.n}</span></div>`,ev)).on("mouseleave",hide);
+      g.append("text").attr("class","anno").attr("x",x(dd.d)+x.bandwidth()/2).attr("y",y(dd.val)-4).attr("text-anchor","middle").attr("font-size","10").text(dd.n>=20?d3.format(".0%")(dd.val):""); });
+  }
+
+  // ---- V2 early survival curves ----
+  function curveChart(sel, series, note){
+    const { g,iw,ih,p } = frame(sel, 320);
+    const x=d3.scaleLinear().domain([0,MAXAGE]).range([0,iw]);
+    const y=d3.scaleLinear().domain([0,1]).range([ih,0]);
+    yGrid(g,y,iw,d3.format(".0%"));
+    g.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`).call(d3.axisBottom(x).ticks(8)).selectAll("text").attr("dy","0.9em");
+    g.append("text").attr("class","anno").attr("x",iw).attr("y",ih-6).attr("text-anchor","end").text("team age (years) →");
+    const line=d3.line().x(d=>x(d.age)).y(d=>y(d.v)).curve(d3.curveMonotoneX);
+    series.forEach(s=>{ if(s.pts.length<2) return;
+      g.append("path").datum(s.pts).attr("fill","none").attr("stroke",s.color).attr("stroke-width",s.w||2.4).attr("stroke-dasharray",s.dash||null).attr("d",line); });
+    const focus=g.append("line").attr("y1",0).attr("y2",ih).attr("stroke",p.baseline).attr("opacity",0);
+    g.append("rect").attr("width",iw).attr("height",ih).attr("fill","transparent").on("mousemove",ev=>{
+      const age=Math.round(x.invert(d3.pointer(ev,g.node())[0])); if(age<0||age>MAXAGE)return;
+      focus.attr("x1",x(age)).attr("x2",x(age)).attr("opacity",1);
+      let rows=""; series.forEach(s=>{ const pt=s.pts.find(q=>q.age===age); if(pt) rows+=`<div class="row"><span style="color:${s.color}">${s.label}</span><span>${d3.format(".0%")(pt.v)}${pt.n?` <span style="color:var(--muted)">(n=${pt.n})</span>`:""}</span></div>`; });
+      tip(`<b>age ${age}</b>${rows}`,ev);
+    }).on("mouseleave",()=>{focus.attr("opacity",0);hide();});
+    return p;
+  }
+  function curvePts(curveObj){ const pts=[]; for(let k=0;k<=MAXAGE;k++){ const c=curveObj[k]; if(c&&c.n>=8) pts.push({age:k,v:c.s/c.n,n:c.n}); } return pts; }
+  function v2(){
+    const p=P();
+    const series=[0,1,2].map(b=>({label:BL[b],color:p.buckets[b],pts:curvePts(EC.curves[b])}));
+    curveChart("#c2",series);
+    legend("#l2",[0,1,2].map(b=>[`${BL[b]} (n=${EC.N[b]})`,p.buckets[b]]));
+  }
+
+  // ---- V3 age-controlled grouped bars ----
+  function v3(){
+    const { g,iw,ih,p } = frame("#c3", 300);
+    const bands=Object.keys(AC);
+    const x0=d3.scaleBand().domain(bands).range([0,iw]).padding(0.25);
+    const x1=d3.scaleBand().domain([0,1,2]).range([0,x0.bandwidth()]).padding(0.12);
+    const y=d3.scaleLinear().domain([0,1]).range([ih,0]);
+    yGrid(g,y,iw,d3.format(".0%"));
+    g.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`).call(d3.axisBottom(x0)).selectAll("text").attr("dy","0.9em");
+    bands.forEach(bn=>AC[bn].forEach((cell,b)=>{ const val=pctv(cell);
+      g.append("rect").attr("x",x0(bn)+x1(b)).attr("y",y(val)).attr("width",x1.bandwidth()).attr("height",ih-y(val)).attr("rx",2).attr("fill",p.buckets[b])
+        .on("mousemove",ev=>tip(`<b>${bn} · ${BL[b]}</b>
+          <div class="row"><span>Active in +3 yrs</span><span>${d3.format(".0%")(val)}</span></div>
+          <div class="row"><span>Team-seasons</span><span>${cell.n}</span></div>`,ev)).on("mouseleave",hide); }));
+    legend("#l3",[0,1,2].map(b=>[BL[b],p.buckets[b]]));
+  }
+
+  // ---- V4 recovery ----
+  function v4(){
+    const p=P();
+    const series=[
+      {label:"Stayed bottom",color:p.buckets[0],pts:curvePts(RC.grp.stayed)},
+      {label:"Climbed to below-median",color:p.buckets[1],pts:curvePts(RC.grp.midClimb)},
+      {label:"Climbed to above-median",color:p.buckets[2],pts:curvePts(RC.grp.topClimb)},
+      {label:"Benchmark: started above-median",color:p.benchmark,dash:"5 4",w:2,pts:curvePts(RC.grp.benchmark)},
+    ];
+    curveChart("#c4",series);
+    legend("#l4",series.map(s=>[`${s.label} (n=${RC.N[{0:'stayed',1:'midClimb',2:'topClimb',3:'benchmark'}[series.indexOf(s)]]??''})`.replace(' (n=)',''),s.color,!!s.dash]));
+  }
+
+  // ---- V5 veteran streak + climb-out ----
+  function v5(){
+    const { g,iw,ih,p } = frame("#c5", 240);
+    const labs=["Not bottom","Bottom 1 yr","Bottom 2 yrs","Bottom 3+ yrs"];
+    const data=VS.map((c,i)=>({i,val:pctv(c),n:c.n}));
+    const x=d3.scaleBand().domain(d3.range(4)).range([0,iw]).padding(0.3);
+    const y=d3.scaleLinear().domain([0,1]).range([ih,0]);
+    yGrid(g,y,iw,d3.format(".0%"));
+    g.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`).call(d3.axisBottom(x).tickFormat(i=>labs[i])).selectAll("text").attr("dy","0.9em");
+    data.forEach(d=>{ const col=d.i===0?p.buckets[2]:p.buckets[0];
+      g.append("rect").attr("x",x(d.i)).attr("y",y(d.val)).attr("width",x.bandwidth()).attr("height",ih-y(d.val)).attr("rx",3).attr("fill",col).attr("opacity",d.i===0?0.9:1)
+        .on("mousemove",ev=>tip(`<b>${labs[d.i]}</b>
+          <div class="row"><span>Active in +3 yrs</span><span>${d3.format(".0%")(d.val)}</span></div>
+          <div class="row"><span>Team-seasons</span><span>${d.n}</span></div>`,ev)).on("mouseleave",hide);
+      g.append("text").attr("class","anno").attr("x",x(d.i)+x.bandwidth()/2).attr("y",y(d.val)-4).attr("text-anchor","middle").text(d.n>=15?d3.format(".0%")(d.val):""); });
+  }
+  function v5b(){
+    const { g,iw,ih,p } = frame("#c5b", 170);
+    const data=[{lab:"Climbed back out",c:CO.climbed,col:p.buckets[2]},{lab:"Stayed down",c:CO.stayed,col:p.buckets[0]}];
+    const x=d3.scaleBand().domain(data.map(d=>d.lab)).range([0,iw]).padding(0.4);
+    const y=d3.scaleLinear().domain([0,1]).range([ih,0]);
+    yGrid(g,y,iw,d3.format(".0%"));
+    g.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`).call(d3.axisBottom(x)).selectAll("text").attr("dy","0.9em");
+    data.forEach(d=>{ const val=pctv(d.c);
+      g.append("rect").attr("x",x(d.lab)).attr("y",y(val)).attr("width",x.bandwidth()).attr("height",ih-y(val)).attr("rx",3).attr("fill",d.col)
+        .on("mousemove",ev=>tip(`<b>${d.lab}</b><div class="row"><span>Survive +2 more</span><span>${d3.format(".0%")(val)}</span></div><div class="row"><span>Teams</span><span>${d.c.n}</span></div>`,ev)).on("mouseleave",hide);
+      g.append("text").attr("class","anno").attr("x",x(d.lab)+x.bandwidth()/2).attr("y",y(val)-4).attr("text-anchor","middle").text(d.c.n>=10?d3.format(".0%")(val):""); });
+  }
+
+  function renderAll(){ v1(); v2(); v3(); v4(); v5(); v5b(); }
+
+  // ---- controls ----
+  const regionSel=document.getElementById("region");
+  regionSel.add(new Option("All FRC","all"));
+  meta.regions.forEach((r,i)=>regionSel.add(new Option(r,i)));
+  function updateN(){ const nm=state.region==null?"All FRC":meta.regions[state.region];
+    document.getElementById("regionN").textContent=`${nm} · ${recs.length.toLocaleString()} teams`; }
+  regionSel.onchange=()=>{ state.region = regionSel.value==="all"?null:+regionSel.value; compute(); renderAll(); updateN(); };
+  document.querySelectorAll("#horizon button").forEach(b=>b.onclick=()=>{ state.horizon=+b.dataset.h;
+    document.querySelectorAll("#horizon button").forEach(x=>x.setAttribute("aria-pressed",x===b)); v1(); });
+  const themeBtn=document.getElementById("theme"), order=["auto","light","dark"];
+  themeBtn.onclick=()=>{ state.theme=order[(order.indexOf(state.theme)+1)%3];
+    if(state.theme==="auto")document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme",state.theme);
+    themeBtn.textContent="Theme: "+state.theme[0].toUpperCase()+state.theme.slice(1); renderAll(); };
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ if(state.theme==="auto")renderAll(); });
+  let rt; addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(renderAll,150);});
+
+  compute(); renderAll(); updateN();
+})();
+</script>
+</body>
+</html>
