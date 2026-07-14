@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FRC Team Longevity — 2002–2026</title>
+<style>
+  :root {
+    --page:#f9f9f7; --surface:#fcfcfb; --text:#0b0b0b; --text2:#52514e;
+    --muted:#898781; --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,.10);
+    --accent:#2a78d6;
+  }
+  :root[data-theme="dark"] {
+    --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7;
+    --muted:#898781; --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10);
+    --accent:#3987e5;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7;
+      --muted:#898781; --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10);
+      --accent:#3987e5;
+    }
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body {
+    background:var(--page); color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  a { color:var(--accent); }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 20px 80px; }
+  header.top {
+    position:sticky; top:0; z-index:20; background:var(--page);
+    border-bottom:1px solid var(--border); backdrop-filter:blur(6px);
+  }
+  header.top .inner { max-width:1080px; margin:0 auto; padding:14px 20px;
+    display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  header.top h1 { font-size:19px; margin:0; letter-spacing:-.01em; }
+  header.top .src { color:var(--muted); font-size:12.5px; }
+  header.top .spacer { flex:1; }
+  .btn {
+    font:inherit; font-size:13px; color:var(--text2); background:var(--surface);
+    border:1px solid var(--border); border-radius:8px; padding:5px 11px; cursor:pointer;
+  }
+  .btn:hover { border-color:var(--muted); }
+  .controls {
+    display:flex; gap:22px; flex-wrap:wrap; align-items:center;
+    padding:16px 0 4px; color:var(--text2); font-size:13px;
+  }
+  .ctl { display:flex; align-items:center; gap:8px; }
+  .ctl label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .seg button { font:inherit; font-size:12.5px; border:0; background:var(--surface); color:var(--text2);
+    padding:5px 12px; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:#fff; }
+  select, input[type=range] { font:inherit; accent-color:var(--accent); }
+  select { background:var(--surface); color:var(--text); border:1px solid var(--border);
+    border-radius:7px; padding:4px 8px; }
+  details.method { margin:8px 0 4px; border:1px solid var(--border); border-radius:10px;
+    background:var(--surface); }
+  details.method summary { cursor:pointer; padding:10px 14px; font-size:13px; color:var(--text2);
+    font-weight:600; }
+  details.method .body { padding:0 16px 14px; font-size:13px; color:var(--text2); }
+  details.method .body b { color:var(--text); }
+  section.view { margin-top:44px; }
+  section.view h2 { font-size:17px; margin:0 0 4px; letter-spacing:-.01em; }
+  section.view .lede { color:var(--text2); font-size:13.5px; margin:0 0 14px; max-width:70ch; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:16px 14px 10px; }
+  .chart-scroll { overflow-x:auto; }
+  svg { display:block; max-width:100%; }
+  .axis text { fill:var(--muted); font-size:11px; }
+  .axis line, .axis path { stroke:var(--baseline); shape-rendering:crispEdges; }
+  .grid line { stroke:var(--grid); shape-rendering:crispEdges; }
+  .grid path { stroke:none; }
+  .anno { fill:var(--text2); font-size:11px; }
+  .anno-line { stroke:var(--muted); stroke-dasharray:2 3; }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; padding:10px 4px 2px; font-size:12.5px;
+    color:var(--text2); }
+  .legend .k { display:inline-flex; align-items:center; gap:6px; }
+  .legend .sw { width:11px; height:11px; border-radius:3px; }
+  .note { color:var(--muted); font-size:12px; margin-top:8px; }
+  .tt {
+    position:fixed; pointer-events:none; z-index:50; background:var(--surface);
+    border:1px solid var(--border); border-radius:9px; padding:8px 10px; font-size:12.5px;
+    color:var(--text); box-shadow:0 6px 24px rgba(0,0,0,.18); opacity:0; transition:opacity .08s;
+    max-width:280px;
+  }
+  .tt b { font-weight:600; }
+  .tt .row { display:flex; justify-content:space-between; gap:14px; }
+  .tt .row span:last-child { font-variant-numeric:tabular-nums; }
+  .cohort-controls { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:8px;
+    font-size:12.5px; color:var(--text2); }
+  .prov-key { display:inline-flex; align-items:center; gap:6px; color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <h1>FRC Team Longevity</h1>
+    <span class="src" id="src">2002–2026 · The Blue Alliance</span>
+    <span class="spacer"></span>
+    <button class="btn" id="theme">Theme: Auto</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls">
+    <div class="ctl">
+      <label>Years</label>
+      <select id="yStart"></select><span style="color:var(--muted)">–</span><select id="yEnd"></select>
+    </div>
+    <span class="prov-key"><svg width="20" height="12"><rect width="20" height="12" fill="url(#provkey)"></rect></svg>2025–26 provisional</span>
+    <span class="prov-key"><span style="display:inline-block;width:11px;height:11px;border-radius:3px;background:rgba(227,73,72,.18)"></span>COVID (2020–21)</span>
+  </div>
+
+  <details class="method">
+    <summary>Definitions &amp; method</summary>
+    <div class="body">
+      <p><b>Active in a year</b> = played ≥1 <b>official</b> event (TBA regional / district /
+      district-championship / championship-division / Einstein). Offseason &amp; preseason excluded.</p>
+      <p><b>Lifespan</b> = first→last active year; interior gaps count as alive (gap-tolerant, robust to
+      COVID sit-outs). <b>Cohort</b> = a team's rookie year. <b>Confirmed dead</b> = absent ≥2 completed
+      seasons, so <b>2025–26 losses are provisional</b> (hatched everywhere; a team that skips 2026 may
+      simply return in 2027).</p>
+      <p><b>Caveat:</b> TBA event rosters count <i>registered</i> teams, so 2020 is slightly inflated
+      (events cancelled mid-season after registration). The gap-tolerant model correctly treats teams that
+      sat out and returned as never-dead.</p>
+      <p class="note" id="pull"></p>
+    </div>
+  </details>
+
+  <section class="view" id="v1">
+    <h2>1 · Population over time</h2>
+    <p class="lede">How many teams competed each season. Participation peaked in 2020 and has not
+      recovered — the question the rest of this tool unpacks is <i>why</i>.</p>
+    <div class="card"><div class="chart-scroll"><div id="c1"></div></div></div>
+  </section>
+
+  <section class="view" id="v2">
+    <h2>2 · Acquisition vs retention</h2>
+    <p class="lede">Each year decomposed into teams gained (new rookies + returners, above the axis) and
+      lost (departures, below), with the net change as a line. Toggle to <b>Rate</b> to divide by the
+      prior year's field — the honest way to compare across a growing base.</p>
+    <div class="card">
+      <div class="controls" style="padding-top:0">
+        <div class="ctl"><label>Metric</label>
+          <div class="seg" id="metric2">
+            <button data-m="counts" aria-pressed="true">Counts</button>
+            <button data-m="rate" aria-pressed="false">Rate</button>
+          </div>
+        </div>
+      </div>
+      <div class="chart-scroll"><div id="c2"></div></div>
+      <div class="legend" id="l2"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v3">
+    <h2>3 · Cohort survival</h2>
+    <p class="lede">Each line is a rookie cohort; it shows the share still active as the cohort ages.
+      Curves stop where the outcome isn't observable yet (right-censoring). Early attrition is steep but
+      remarkably <i>stable</i> across 20 years — except the COVID cohorts.</p>
+    <div class="card">
+      <div class="cohort-controls">
+        <div class="ctl"><label style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em">Group</label>
+          <div class="seg" id="cohortMode">
+            <button data-mode="era" aria-pressed="true">By era</button>
+            <button data-mode="cohort" aria-pressed="false">Every cohort</button>
+          </div>
+        </div>
+        <label id="covidSpotWrap" style="display:none;gap:6px;align-items:center;cursor:pointer">
+          <input type="checkbox" id="covidSpot" checked> Spotlight COVID cohorts (2019–21)</label>
+        <span class="note" id="c3hint" style="margin:0">Each line is a generation; hover to isolate.</span>
+      </div>
+      <div class="chart-scroll"><div id="c3"></div></div>
+      <div class="legend" id="l3"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="note" style="margin:0 0 6px">Distribution of completed lifespans (teams that have since folded)</div>
+      <div class="chart-scroll"><div id="c3b"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v4">
+    <h2>4 · Departure rate by team generation</h2>
+    <p class="lede">Each line is a <b>generation</b> of teams, grouped by the era they started in. It shows the
+      share of that generation leaving each year. Departures normally <i>fall</i> as a generation matures — so
+      watch the post-COVID jump: nearly every generation, even the veterans who should be stickiest, started
+      leaving faster.</p>
+    <div class="card">
+      <div class="chart-scroll"><div id="c4"></div></div>
+      <div class="legend" id="l4"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v5">
+    <h2>5 · The field is aging</h2>
+    <p class="lede">Why the crude rate misleads: with fewer rookies, the field aged dramatically — the median
+      team age roughly doubled, and long-lived veterans came to dominate. Those veterans rarely leave, masking
+      the across-the-board rise in per-team churn.</p>
+    <div class="card">
+      <div class="note" style="margin:0 0 6px">Age composition of the active field</div>
+      <div class="chart-scroll"><div id="c5"></div></div>
+      <div class="legend" id="l5"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="note" style="margin:0 0 6px">Median team age</div>
+      <div class="chart-scroll"><div id="c5b"></div></div>
+    </div>
+  </section>
+
+  <p class="note" style="margin-top:40px">Data: The Blue Alliance API v3. EPA/competitiveness and regional
+    breakdowns are deliberately out of scope for this first cut. Built as a single self-contained file.</p>
+</div>
+
+<div class="tt" id="tt"></div>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <pattern id="provkey" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="var(--surface)"></rect>
+    <line x1="0" y1="0" x2="0" y2="6" stroke="var(--muted)" stroke-width="1.4"></line>
+  </pattern>
+</defs></svg>
+
+<!-- D3 -->
+<!-- COMPUTE -->
+<!-- DATA -->
+<script>
+(function(){
+  const { records, meta } = buildRecords(window.PARTICIPATION);
+  const START = meta.start, END = meta.end;
+  const YEARS = d3.range(START, END + 1);
+  const PROV = new Set([END - 1, END]);
+  const isProv = y => PROV.has(y);
+  const MAX_AGE = 16;          // cohort-survival x-axis cap
+  const RATE_START = 2008;     // generation rate view: skip noisy early years
+
+  // Cohort tranches (a team's "generation", by rookie year). Categorical colors.
+  const TRANCHES = [
+    { key:"vet",  label:"Veterans (’02–’08)",  lo:0,    hi:2008, c:{light:"#2a78d6", dark:"#3987e5"} },
+    { key:"e10",  label:"Early 2010s (’09–’15)", lo:2009, hi:2015, c:{light:"#1baf7a", dark:"#199e70"} },
+    { key:"l10",  label:"Late 2010s (’16–’18)",  lo:2016, hi:2018, c:{light:"#eb6834", dark:"#d95926"} },
+    { key:"cov",  label:"COVID (’19–’21)",       lo:2019, hi:2021, c:{light:"#e34948", dark:"#e66767"} },
+    { key:"post", label:"Post-COVID (’22–’26)",  lo:2022, hi:2026, c:{light:"#4a3aa7", dark:"#9085e9"} },
+  ];
+  const trancheOf = yr => TRANCHES.find(t => yr >= t.lo && yr <= t.hi) || null;
+  const trancheColor = (t, P) => P.dark ? t.c.dark : t.c.light;
+
+  // ---- precompute (data doesn't depend on view state) ----
+  const active = activeByYear(records, START, END);
+  const fl = flows(records, START, END);
+  const cs = cohortSurvival(records, START, END);
+  const comp = ageComposition(records, START, END);
+  const hist = lifespanHistogram(records, END);
+  const depGrp = departureByGroupYear(records, START, END,
+    r => { const t = trancheOf(r.r); return t ? t.key : null; });
+  const BANDS = AGE_BANDS.map(b => b[0]);
+  const BAND_LABEL = { age1:"Rookie yr", age2_3:"2–3 yrs", age4_6:"4–6 yrs",
+                       age7_10:"7–10 yrs", age11_15:"11–15 yrs", "16+":"16+ yrs" };
+
+  document.getElementById("pull").textContent =
+    "Pull date: " + (meta.pullDate || "unknown") + ". Window " + START + "–" + END + ".";
+  document.getElementById("src").textContent = START + "–" + END + " · The Blue Alliance";
+
+  // ---- state ----
+  const state = { theme: "auto", yStart: START, yEnd: END, metric: "counts", covid: true, cohortMode: "era" };
+
+  function pal() {
+    const dark = document.documentElement.getAttribute("data-theme") === "dark" ||
+      (!document.documentElement.getAttribute("data-theme") &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
+    return {
+      dark,
+      text: dark ? "#fff" : "#0b0b0b",
+      text2: dark ? "#c3c2b7" : "#52514e",
+      muted: "#898781",
+      grid: dark ? "#2c2c2a" : "#e1e0d9",
+      baseline: dark ? "#383835" : "#c3c2b7",
+      surface: dark ? "#1a1a19" : "#fcfcfb",
+      gain: dark ? "#3987e5" : "#2a78d6",
+      ret: dark ? "#199e70" : "#1baf7a",
+      loss: dark ? "#e66767" : "#e34948",
+      net: dark ? "#ffffff" : "#0b0b0b",
+      orange: dark ? "#d95926" : "#eb6834",
+      covid: "rgba(227,73,72,0.14)",
+      ramp: ["#cde2fb","#9ec5f4","#6da7ec","#3987e5","#256abf","#184f95","#0d366b"],
+    };
+  }
+
+  const tt = document.getElementById("tt");
+  function showTip(html, ev) {
+    tt.innerHTML = html; tt.style.opacity = 1;
+    const pad = 14; let x = ev.clientX + pad, y = ev.clientY + pad;
+    const r = tt.getBoundingClientRect();
+    if (x + r.width > innerWidth) x = ev.clientX - r.width - pad;
+    if (y + r.height > innerHeight) y = ev.clientY - r.height - pad;
+    tt.style.left = x + "px"; tt.style.top = y + "px";
+  }
+  const hideTip = () => { tt.style.opacity = 0; };
+
+  const M = { top: 20, right: 20, bottom: 34, left: 46 };
+  function frame(sel, height) {
+    const el = document.querySelector(sel);
+    el.innerHTML = "";
+    const W = Math.max(el.clientWidth || 760, 520);
+    const H = height;
+    const svg = d3.select(el).append("svg").attr("width", W).attr("height", H)
+      .attr("viewBox", `0 0 ${W} ${H}`);
+    const iw = W - M.left - M.right, ih = H - M.top - M.bottom;
+    const g = svg.append("g").attr("transform", `translate(${M.left},${M.top})`);
+    // provisional hatch pattern (per-svg, theme-aware)
+    const P = pal();
+    const pid = "prov" + Math.random().toString(36).slice(2);
+    svg.append("defs").append("pattern").attr("id", pid)
+      .attr("patternUnits", "userSpaceOnUse").attr("width", 6).attr("height", 6)
+      .attr("patternTransform", "rotate(45)")
+      .call(p => { p.append("rect").attr("width", 6).attr("height", 6).attr("fill", P.surface).attr("opacity", .0);
+                   p.append("line").attr("y2", 6).attr("stroke", P.muted).attr("stroke-width", 1).attr("opacity", .5); });
+    return { svg, g, iw, ih, W, H, P, pid };
+  }
+  function yearRange() {
+    return YEARS.filter(y => y >= state.yStart && y <= state.yEnd);
+  }
+  function xAxis(g, x, ih, P, band) {
+    const ax = g.append("g").attr("class", "axis").attr("transform", `translate(0,${ih})`)
+      .call(band ? d3.axisBottom(x).tickValues(x.domain().filter((d,i)=>i%Math.ceil(x.domain().length/12)===0))
+                 : d3.axisBottom(x).ticks(8).tickFormat(d3.format("d")));
+    ax.selectAll("text").attr("dy", "0.9em");
+    return ax;
+  }
+  function yGrid(g, y, iw, P, fmt) {
+    g.append("g").attr("class", "grid").call(d3.axisLeft(y).ticks(5).tickSize(-iw).tickFormat(""))
+      .select(".domain").remove();
+    g.append("g").attr("class", "axis").call(d3.axisLeft(y).ticks(5).tickFormat(fmt || d3.format("~s")))
+      .select(".domain").remove();
+  }
+  function covidBand(g, x, ih, P) {
+    [2020, 2021].forEach(yr => {
+      if (yr < state.yStart || yr > state.yEnd) return;
+      const x0 = x(yr) - (x.step ? x.bandwidth ? 0 : 0 : 0);
+    });
+  }
+
+  // ============ VIEW 1: population area ============
+  function view1() {
+    const yrs = yearRange();
+    const { g, iw, ih, P, pid } = frame("#c1", 300);
+    const x = d3.scaleLinear().domain([state.yStart, state.yEnd]).range([0, iw]);
+    const y = d3.scaleLinear().domain([0, d3.max(yrs, d => active[d]) * 1.08]).nice().range([ih, 0]);
+    yGrid(g, y, iw, P);
+    xAxis(g, x, ih, P);
+    // covid shading
+    [2020, 2021].forEach(yr => {
+      if (yr < state.yStart || yr > state.yEnd) return;
+      g.append("rect").attr("x", x(yr - .5)).attr("width", Math.abs(x(1) - x(0)))
+        .attr("y", 0).attr("height", ih).attr("fill", P.covid);
+    });
+    const area = d3.area().x(d => x(d)).y0(ih).y1(d => y(active[d])).curve(d3.curveMonotoneX);
+    const line = d3.line().x(d => x(d)).y(d => y(active[d])).curve(d3.curveMonotoneX);
+    g.append("path").datum(yrs).attr("fill", P.gain).attr("opacity", .16).attr("d", area);
+    g.append("path").datum(yrs).attr("fill", "none").attr("stroke", P.gain).attr("stroke-width", 2).attr("d", line);
+    // provisional overlay
+    yrs.filter(isProv).forEach(yr => {
+      g.append("rect").attr("x", x(yr - .5)).attr("width", Math.abs(x(1) - x(0)))
+        .attr("y", 0).attr("height", ih).attr("fill", `url(#${pid})`);
+    });
+    // 2020 peak annotation
+    if (2020 >= state.yStart && 2020 <= state.yEnd) {
+      g.append("line").attr("class", "anno-line").attr("x1", 0).attr("x2", iw)
+        .attr("y1", y(active[2020])).attr("y2", y(active[2020]));
+      g.append("text").attr("class", "anno").attr("x", iw).attr("y", y(active[2020]) - 5)
+        .attr("text-anchor", "end").text("2020 peak · " + active[2020]);
+    }
+    // hover dots
+    g.append("g").selectAll("circle").data(yrs).join("circle")
+      .attr("cx", d => x(d)).attr("cy", d => y(active[d])).attr("r", 8).attr("fill", "transparent")
+      .on("mousemove", (ev, d) => {
+        const f = fl[d];
+        showTip(`<b>${d}</b>${isProv(d) ? " <span style='color:var(--muted)'>(provisional)</span>" : ""}
+          <div class="row"><span>Active teams</span><span>${active[d]}</span></div>
+          <div class="row"><span>Rookies</span><span>${f.rookies}</span></div>
+          <div class="row"><span>Departures</span><span>${f.departures}</span></div>
+          <div class="row"><span>Net change</span><span>${f.net >= 0 ? "+" : ""}${f.net}</span></div>`, ev);
+      }).on("mouseleave", hideTip);
+  }
+
+  // ============ VIEW 2: acquisition vs retention ============
+  function view2() {
+    const yrs = yearRange().filter(y => y > START); // net/flows need prior year
+    const { g, iw, ih, P, pid } = frame("#c2", 340);
+    const rate = state.metric === "rate";
+    const val = (y, k) => rate ? (fl[y][k] / active[y - 1]) : fl[y][k];
+    const netV = y => rate ? (fl[y].net / active[y - 1]) : fl[y].net;
+    const up = y => val(y, "rookies") + val(y, "returns");
+    const maxUp = d3.max(yrs, up), maxDn = d3.max(yrs, y => val(y, "departures"));
+    const x = d3.scaleBand().domain(yrs).range([0, iw]).padding(0.22);
+    const y = d3.scaleLinear().domain([-maxDn * 1.1, maxUp * 1.12]).nice().range([ih, 0]);
+    const fmt = rate ? d3.format(".0%") : d3.format("~s");
+    g.append("g").attr("class", "grid").call(d3.axisLeft(y).ticks(6).tickSize(-iw).tickFormat("")).select(".domain").remove();
+    g.append("g").attr("class", "axis").call(d3.axisLeft(y).ticks(6).tickFormat(fmt)).select(".domain").remove();
+    xAxis(g, x, ih, P, true);
+    // zero line
+    g.append("line").attr("x1", 0).attr("x2", iw).attr("y1", y(0)).attr("y2", y(0)).attr("stroke", P.baseline);
+    // covid shading
+    [2020, 2021].forEach(yr => { if (x(yr) != null) g.append("rect").attr("x", x(yr) - x.step() * .11)
+      .attr("width", x.bandwidth() + x.step() * .22).attr("y", 0).attr("height", ih).attr("fill", P.covid); });
+    yrs.forEach(yr => {
+      const bx = x(yr), bw = x.bandwidth();
+      const rk = val(yr, "rookies"), rt = val(yr, "returns"), dp = val(yr, "departures");
+      // rookies (from 0 up)
+      bar(g, bx, y(rk), bw, y(0) - y(rk), P.gain, yr, "Rookies", rk, rate);
+      // returns stacked above rookies
+      bar(g, bx, y(rk + rt), bw, y(rk) - y(rk + rt), P.ret, yr, "Returners", rt, rate);
+      // departures below 0
+      bar(g, bx, y(0), bw, y(-dp) - y(0), P.loss, yr, "Departures", dp, rate);
+      if (isProv(yr)) g.append("rect").attr("x", bx).attr("y", 0).attr("width", bw).attr("height", ih)
+        .attr("fill", `url(#${pid})`).attr("pointer-events", "none");
+    });
+    // net line
+    const lx = yr => x(yr) + x.bandwidth() / 2;
+    g.append("path").datum(yrs).attr("fill", "none").attr("stroke", P.net).attr("stroke-width", 2)
+      .attr("d", d3.line().x(lx).y(yr => y(netV(yr))));
+    g.selectAll("circle.net").data(yrs).join("circle").attr("class", "net")
+      .attr("cx", lx).attr("cy", yr => y(netV(yr))).attr("r", 3).attr("fill", P.net)
+      .attr("stroke", P.surface).attr("stroke-width", 1.5);
+    legend("#l2", [["Rookies", P.gain], ["Returners", P.ret], ["Departures", P.loss], ["Net change", P.net]]);
+    function bar(g, bx, ry, bw, rh, color, yr, label, v, rate) {
+      if (rh <= 0) return;
+      g.append("rect").attr("x", bx).attr("y", ry).attr("width", bw).attr("height", rh)
+        .attr("rx", 3).attr("fill", color)
+        .on("mousemove", ev => showTip(`<b>${yr}</b>${isProv(yr) ? " (prov.)" : ""}
+          <div class="row"><span>${label}</span><span>${rate ? d3.format(".1%")(v) : Math.round(v)}</span></div>`, ev))
+        .on("mouseleave", hideTip);
+    }
+  }
+
+  // ============ VIEW 3: cohort survival ============
+  function view3() {
+    const era = state.cohortMode === "era";
+    document.getElementById("covidSpotWrap").style.display = era ? "none" : "inline-flex";
+    document.getElementById("c3hint").textContent = era
+      ? "Each line pools every cohort in that era; hover to isolate."
+      : "Each line is a rookie cohort; hover to isolate.";
+    document.querySelector("#l3").innerHTML = "";
+    const { g, iw, ih, P } = frame("#c3", 360);
+    const x = d3.scaleLinear().domain([0, MAX_AGE]).range([0, iw]);
+    const y = d3.scaleLinear().domain([0, 1]).range([ih, 0]);
+    g.append("g").attr("class", "grid").call(d3.axisLeft(y).ticks(5).tickSize(-iw).tickFormat("")).select(".domain").remove();
+    g.append("g").attr("class", "axis").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(".0%"))).select(".domain").remove();
+    g.append("g").attr("class", "axis").attr("transform", `translate(0,${ih})`)
+      .call(d3.axisBottom(x).ticks(MAX_AGE / 2)).selectAll("text").attr("dy", "0.9em");
+    g.append("text").attr("class", "anno").attr("x", iw).attr("y", ih - 6).attr("text-anchor", "end").text("team age (years) →");
+    const line = d3.line().x(d => x(d.age)).y(d => y(d.s)).curve(d3.curveMonotoneX);
+
+    if (era) {
+      legend("#l3", TRANCHES.map(t => [t.label, trancheColor(t, P)]));
+      TRANCHES.forEach(t => {
+        const inTr = Object.keys(cs).map(Number).filter(c => c >= Math.max(t.lo, START) && c <= Math.min(t.hi, END));
+        const pts = [];
+        for (let a = 0; a <= MAX_AGE; a++) {
+          let num = 0, den = 0;
+          inTr.forEach(c => { const s = cs[c].surv[a]; if (s != null) { num += cs[c].N * s; den += cs[c].N; } });
+          if (den > 0) pts.push({ age: a, s: num / den });
+        }
+        if (pts.length < 2) return;
+        const col = trancheColor(t, P);
+        g.append("path").datum(pts).attr("fill", "none").attr("stroke", col).attr("stroke-width", 2.6)
+          .attr("d", line).style("cursor", "pointer")
+          .on("mousemove", ev => {
+            d3.select(ev.currentTarget).attr("stroke-width", 4).raise();
+            const gv = a => { const p = pts.find(q => q.age === a); return p ? d3.format(".0%")(p.s) : "—"; };
+            const last = pts[pts.length - 1];
+            showTip(`<b>${t.label}</b>
+              <div class="row"><span>Reached year 2</span><span>${gv(2)}</span></div>
+              <div class="row"><span>Reached year 5</span><span>${gv(5)}</span></div>
+              <div class="row"><span>Reached year 10</span><span>${gv(10)}</span></div>
+              <div class="row"><span>Last observed</span><span>age ${last.age} · ${d3.format(".0%")(last.s)}</span></div>`, ev);
+          })
+          .on("mouseleave", ev => { d3.select(ev.currentTarget).attr("stroke-width", 2.6); hideTip(); });
+      });
+    } else {
+      const cohorts = Object.keys(cs).map(Number).sort((a, b) => a - b);
+      const cScale = d3.scaleSequential(d3.interpolateRgbBasis(P.ramp)).domain([START, END]);
+      const covidSet = new Set([2019, 2020, 2021]);
+      const series = c => { const s = cs[c].surv, arr = []; for (let a = 0; a <= MAX_AGE; a++) if (s[a] != null) arr.push({ age: a, s: s[a] }); return arr; };
+      cohorts.forEach(c => {
+        const isC = covidSet.has(c), dim = state.covid && !isC, arr = series(c);
+        if (!arr.length) return;
+        g.append("path").datum(arr).attr("fill", "none")
+          .attr("stroke", state.covid && isC ? P.loss : cScale(c))
+          .attr("stroke-width", state.covid && isC ? 2.4 : 1.4)
+          .attr("opacity", dim ? 0.18 : 0.9).attr("d", line).style("cursor", "pointer")
+          .on("mousemove", ev => {
+            d3.select(ev.currentTarget).attr("opacity", 1).attr("stroke-width", 3).raise();
+            showTip(`<b>${c} cohort</b> · N=${cs[c].N}
+              <div class="row"><span>Reached year 2</span><span>${cs[c].surv[2] != null ? d3.format(".0%")(cs[c].surv[2]) : "—"}</span></div>
+              <div class="row"><span>Reached year 5</span><span>${cs[c].surv[5] != null ? d3.format(".0%")(cs[c].surv[5]) : "—"}</span></div>`, ev);
+          })
+          .on("mouseleave", ev => { d3.select(ev.currentTarget).attr("opacity", dim ? 0.18 : 0.9).attr("stroke-width", state.covid && isC ? 2.4 : 1.4); hideTip(); });
+      });
+      const gid = "cg" + Math.random().toString(36).slice(2);
+      const grad = g.append("defs").append("linearGradient").attr("id", gid);
+      d3.range(0, 1.01, 0.1).forEach(tt => grad.append("stop").attr("offset", (tt * 100) + "%").attr("stop-color", cScale(START + tt * (END - START))));
+      const lg = g.append("g").attr("transform", `translate(${iw - 150},8)`);
+      lg.append("rect").attr("width", 150).attr("height", 8).attr("rx", 2).attr("fill", `url(#${gid})`);
+      lg.append("text").attr("class", "anno").attr("y", 24).text(START + " cohort");
+      lg.append("text").attr("class", "anno").attr("x", 150).attr("y", 24).attr("text-anchor", "end").text(END);
+    }
+  }
+
+  function view3b() {
+    const { g, iw, ih, P } = frame("#c3b", 180);
+    const maxLen = 15;
+    const data = d3.range(1, maxLen + 1).map(L => ({ L, n: L === maxLen
+      ? d3.sum(Object.entries(hist).filter(([k]) => +k >= maxLen).map(([, v]) => v))
+      : (hist[L] || 0) }));
+    const x = d3.scaleBand().domain(data.map(d => d.L)).range([0, iw]).padding(0.18);
+    const y = d3.scaleLinear().domain([0, d3.max(data, d => d.n)]).nice().range([ih, 0]);
+    g.append("g").attr("class", "axis").attr("transform", `translate(0,${ih})`)
+      .call(d3.axisBottom(x).tickFormat(d => d === maxLen ? "15+" : d)).selectAll("text").attr("dy", "0.9em");
+    g.append("g").attr("class", "axis").call(d3.axisLeft(y).ticks(4).tickFormat(d3.format("~s"))).select(".domain").remove();
+    g.selectAll("rect").data(data).join("rect").attr("x", d => x(d.L)).attr("y", d => y(d.n))
+      .attr("width", x.bandwidth()).attr("height", d => ih - y(d.n)).attr("rx", 3).attr("fill", P.gain)
+      .on("mousemove", (ev, d) => showTip(`<b>${d.L === maxLen ? "15+ seasons" : d.L + " season" + (d.L > 1 ? "s" : "")}</b>
+        <div class="row"><span>Teams</span><span>${d.n}</span></div>`, ev)).on("mouseleave", hideTip);
+    g.append("text").attr("class", "anno").attr("x", iw).attr("y", 4).attr("text-anchor", "end").text("← most teams fold within 3 seasons");
+  }
+
+  // ============ VIEW 4: departure rate by team generation ============
+  function view4() {
+    const startY = Math.max(state.yStart, RATE_START);
+    const yrs = YEARS.filter(y => y > START && y >= startY && y <= state.yEnd);
+    const { g, iw, ih, P, pid } = frame("#c4", 320);
+    const MINBASE = 25;   // suppress noisy tiny-sample points
+    const x = d3.scaleLinear().domain([startY, state.yEnd]).range([0, iw]);
+    let maxR = 0;
+    yrs.forEach(yr => TRANCHES.forEach(t => { const d = depGrp[yr] && depGrp[yr][t.key]; if (d && d.base >= MINBASE) maxR = Math.max(maxR, d.rate); }));
+    const y = d3.scaleLinear().domain([0, maxR * 1.1]).nice().range([ih, 0]);
+    yGrid(g, y, iw, P, d3.format(".0%"));
+    g.append("g").attr("class", "axis").attr("transform", `translate(0,${ih})`)
+      .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format("d"))).selectAll("text").attr("dy", "0.9em");
+    [2020, 2021].forEach(yr => { if (yr >= startY && yr <= state.yEnd)
+      g.append("rect").attr("x", x(yr - .5)).attr("width", Math.abs(x(1) - x(0))).attr("y", 0).attr("height", ih).attr("fill", P.covid); });
+    yrs.filter(isProv).forEach(yr => g.append("rect").attr("x", x(yr - .5)).attr("width", Math.abs(x(1) - x(0)))
+      .attr("y", 0).attr("height", ih).attr("fill", `url(#${pid})`).attr("pointer-events", "none"));
+    const line = d3.line().x(d => x(d.y)).y(d => y(d.r)).curve(d3.curveMonotoneX);
+    TRANCHES.forEach(t => {
+      const pts = yrs.filter(yr => depGrp[yr] && depGrp[yr][t.key] && depGrp[yr][t.key].base >= MINBASE)
+        .map(yr => ({ y: yr, r: depGrp[yr][t.key].rate }));
+      if (pts.length < 2) return;
+      g.append("path").datum(pts).attr("fill", "none").attr("stroke", trancheColor(t, P)).attr("stroke-width", 2.4).attr("d", line);
+    });
+    const focus = g.append("line").attr("y1", 0).attr("y2", ih).attr("stroke", P.baseline).attr("opacity", 0);
+    g.append("rect").attr("width", iw).attr("height", ih).attr("fill", "transparent")
+      .on("mousemove", ev => {
+        const yr = Math.round(x.invert(d3.pointer(ev, g.node())[0]));
+        if (yr < startY || yr > state.yEnd) return;
+        focus.attr("x1", x(yr)).attr("x2", x(yr)).attr("opacity", 1);
+        let rows = "";
+        TRANCHES.forEach(t => { const d = depGrp[yr] && depGrp[yr][t.key];
+          if (d && d.base >= MINBASE) rows += `<div class="row"><span style="color:${trancheColor(t, P)}">${t.label.split(" (")[0]}</span><span>${d3.format(".1%")(d.rate)}</span></div>`; });
+        showTip(`<b>${yr}</b>${isProv(yr) ? " (prov.)" : ""}${rows}`, ev);
+      }).on("mouseleave", () => { focus.attr("opacity", 0); hideTip(); });
+    legend("#l4", TRANCHES.map(t => [t.label, trancheColor(t, P)]));
+  }
+
+  // ============ VIEW 5: age composition + median age ============
+  function view5() {
+    const yrs = yearRange();
+    const { g, iw, ih, P, pid } = frame("#c5", 300);
+    const x = d3.scaleLinear().domain([state.yStart, state.yEnd]).range([0, iw]);
+    const y = d3.scaleLinear().domain([0, 1]).range([ih, 0]);
+    const order = ["16+", "age11_15", "age7_10", "age4_6", "age2_3", "age1"]; // old at bottom
+    const stackData = yrs.map(yr => { const o = { yr }; BANDS.forEach(b => o[b] = comp[yr][b]); return o; });
+    const stack = d3.stack().keys(order)(stackData);
+    const rampFor = d3.scaleOrdinal().domain(order).range([P.ramp[6], P.ramp[5], P.ramp[4], P.ramp[3], P.ramp[2], P.ramp[1]]);
+    g.append("g").attr("class", "axis").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(".0%"))).select(".domain").remove();
+    g.append("g").attr("class", "axis").attr("transform", `translate(0,${ih})`)
+      .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format("d"))).selectAll("text").attr("dy", "0.9em");
+    const area = d3.area().x((d, i) => x(yrs[i])).y0(d => y(d[0])).y1(d => y(d[1])).curve(d3.curveMonotoneX);
+    stack.forEach(layer => {
+      g.append("path").datum(layer).attr("fill", rampFor(layer.key)).attr("opacity", .92).attr("d", area)
+        .attr("stroke", P.surface).attr("stroke-width", 1)
+        .on("mousemove", ev => { const xm = d3.pointer(ev, g.node())[0]; const yr = Math.round(x.invert(xm));
+          if (comp[yr]) showTip(`<b>${BAND_LABEL[layer.key]} · ${yr}</b>
+            <div class="row"><span>Share of field</span><span>${d3.format(".0%")(comp[yr][layer.key])}</span></div>`, ev); })
+        .on("mouseleave", hideTip);
+    });
+    yrs.filter(isProv).forEach(yr => g.append("rect").attr("x", x(yr - .5)).attr("width", Math.abs(x(1) - x(0)))
+      .attr("y", 0).attr("height", ih).attr("fill", `url(#${pid})`).attr("pointer-events", "none"));
+    legend("#l5", order.slice().reverse().map(b => [BAND_LABEL[b], rampFor(b)]));
+  }
+  function view5b() {
+    const yrs = yearRange();
+    const { g, iw, ih, P } = frame("#c5b", 170);
+    const x = d3.scaleLinear().domain([state.yStart, state.yEnd]).range([0, iw]);
+    const y = d3.scaleLinear().domain([0, d3.max(yrs, yr => comp.medianAge[yr]) * 1.15]).nice().range([ih, 0]);
+    yGrid(g, y, iw, P, d3.format("d"));
+    g.append("g").attr("class", "axis").attr("transform", `translate(0,${ih})`)
+      .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format("d"))).selectAll("text").attr("dy", "0.9em");
+    g.append("path").datum(yrs).attr("fill", "none").attr("stroke", P.gain).attr("stroke-width", 2.4)
+      .attr("d", d3.line().x(x).y(yr => y(comp.medianAge[yr])).curve(d3.curveMonotoneX));
+    g.selectAll("circle").data(yrs).join("circle").attr("cx", x).attr("cy", yr => y(comp.medianAge[yr])).attr("r", 8)
+      .attr("fill", "transparent").on("mousemove", (ev, yr) => showTip(`<b>${yr}</b>
+        <div class="row"><span>Median team age</span><span>${comp.medianAge[yr]} yrs</span></div>`, ev)).on("mouseleave", hideTip);
+  }
+
+  // ---- shared helpers ----
+  function legend(sel, items) {
+    const el = document.querySelector(sel); el.innerHTML = "";
+    items.forEach(([label, color]) => {
+      const k = document.createElement("span"); k.className = "k";
+      k.innerHTML = `<span class="sw" style="background:${color}"></span>${label}`;
+      el.appendChild(k);
+    });
+  }
+
+  function renderAll() {
+    view1(); view2(); view3(); view3b(); view4(); view5(); view5b();
+  }
+
+  // ---- controls ----
+  const ys = document.getElementById("yStart"), ye = document.getElementById("yEnd");
+  YEARS.forEach(y => { ys.add(new Option(y, y)); ye.add(new Option(y, y)); });
+  ys.value = START; ye.value = END;
+  ys.onchange = () => { state.yStart = +ys.value; if (state.yStart > state.yEnd) { state.yEnd = state.yStart; ye.value = state.yEnd; } renderAll(); };
+  ye.onchange = () => { state.yEnd = +ye.value; if (state.yEnd < state.yStart) { state.yStart = state.yEnd; ys.value = state.yStart; } renderAll(); };
+
+  document.querySelectorAll("#metric2 button").forEach(b => b.onclick = () => {
+    state.metric = b.dataset.m;
+    document.querySelectorAll("#metric2 button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    view2();
+  });
+  document.getElementById("covidSpot").onchange = e => { state.covid = e.target.checked; view3(); };
+  document.querySelectorAll("#cohortMode button").forEach(b => b.onclick = () => {
+    state.cohortMode = b.dataset.mode;
+    document.querySelectorAll("#cohortMode button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    view3();
+  });
+
+  const themeBtn = document.getElementById("theme");
+  const order = ["auto", "light", "dark"];
+  themeBtn.onclick = () => {
+    state.theme = order[(order.indexOf(state.theme) + 1) % 3];
+    if (state.theme === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", state.theme);
+    themeBtn.textContent = "Theme: " + state.theme[0].toUpperCase() + state.theme.slice(1);
+    renderAll();
+  };
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (state.theme === "auto") renderAll(); });
+
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 150); });
+  renderAll();
+})();
+</script>
+</body>
+</html>

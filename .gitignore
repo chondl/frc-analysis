@@ -1,0 +1,4 @@
+# Durable TBA response cache (derivable via pull_participation.py; large)
+cache/
+__pycache__/
+*.pyc
