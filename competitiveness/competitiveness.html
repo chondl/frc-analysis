@@ -1,21 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FRC Competitiveness &amp; Survival — 2002–2026</title>
 <style>
   :root {
-    --page:#f9f9f7; --surface:#fcfcfb; --text:#0b0b0b; --text2:#52514e;
-    --muted:#898781; --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,.10); --accent:#2a78d6;
-  }
-  :root[data-theme="dark"] {
+    color-scheme: dark;
     --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7; --muted:#898781;
     --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10); --accent:#3987e5;
   }
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
-    --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7; --muted:#898781;
-    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10); --accent:#3987e5; } }
   * { box-sizing:border-box; } html,body { margin:0; }
   body { background:var(--page); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
     line-height:1.5; -webkit-font-smoothing:antialiased; }
@@ -64,7 +58,6 @@
     <span class="src" id="src">2002–2026 · Statbotics + The Blue Alliance</span>
     <span class="spacer"></span>
     <a class="btn" href="../longevity/team-longevity.html">← Team Longevity</a>
-    <button class="btn" id="theme">Theme: Auto</button>
   </div>
 </header>
 
@@ -97,7 +90,7 @@
 
   <section class="view" id="v1">
     <h2>1 · Early standing and the odds of lasting</h2>
-    <p class="lede">Teams grouped by their local-standing <b>decile</b> over their first three seasons, and the share
+    <p class="lede">Teams grouped by their local-standing <b>decile</b> over their first four seasons, and the share
       that reach year 5. The climb is smooth, with a distinct drop at the bottom decile.</p>
     <div class="card">
       <div class="controls" style="padding-top:0"><div class="ctl"><label>Horizon</label>
@@ -191,13 +184,13 @@ const meanPct = (rec, ages) => {
   return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null;
 };
 
-// (1) Decile gradient: early (first-3-season mean) standing decile -> reach year 5 / 10.
+// (1) Decile gradient: early (first-4-season mean) standing decile -> reach year 5 / 10.
 function gradient(records, start, end) {
   const out = {};
   for (let d = 0; d < 10; d++) out[d] = { s5: 0, n5: 0, s10: 0, n10: 0 };
   for (const rec of records) {
     if (!isRookieInWindow(rec, start, 2019)) continue;
-    const e = meanPct(rec, [0, 1, 2]);
+    const e = meanPct(rec, [0, 1, 2, 3]);   // first four seasons (formative window)
     if (e == null) continue;
     const d = decileOf(e);
     if (rec.r <= 2019 && rec.r + 5 <= end) { out[d].n5++; if (rec.last >= rec.r + 5) out[d].s5++; }
@@ -211,7 +204,7 @@ function reachByEarlyBucket(records, start, end, horizon, cohortMax) {
   const out = [ {s:0,n:0}, {s:0,n:0}, {s:0,n:0} ];
   for (const rec of records) {
     if (!isRookieInWindow(rec, start, cohortMax)) continue;
-    const e = meanPct(rec, [0, 1, 2]);
+    const e = meanPct(rec, [0, 1, 2, 3]);   // first four seasons (formative window)
     if (e == null || rec.r + horizon > end) continue;
     const b = bucketOf(e);
     out[b].n++; if (rec.last >= rec.r + horizon) out[b].s++;
@@ -225,7 +218,7 @@ function earlyCurves(records, start, end, maxAge) {
   const N = [0, 0, 0];
   for (const rec of records) {
     if (!isRookieInWindow(rec, start, end)) continue;
-    const e = meanPct(rec, [0, 1, 2]);
+    const e = meanPct(rec, [0, 1, 2, 3]);   // first four seasons (formative window)
     if (e == null) continue;
     const b = bucketOf(e); N[b]++;
     for (let k = 0; k <= maxAge; k++) {
@@ -324,14 +317,12 @@ function veteranClimbOut(records, start, end) {
   const START = meta.start, END = meta.end, MAXAGE = 16;
   document.getElementById("pull").textContent = "Pull date: " + (meta.pullDate || "unknown") + ". Window " + START + "–" + END + ".";
 
-  const state = { theme:"auto", region:null, horizon:5 };
+  const state = { region:null, horizon:5 };
   function P() {
-    const dark = document.documentElement.getAttribute("data-theme")==="dark" ||
-      (!document.documentElement.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
-    return { dark,
-      text:dark?"#fff":"#0b0b0b", text2:dark?"#c3c2b7":"#52514e", muted:"#898781",
-      grid:dark?"#2c2c2a":"#e1e0d9", baseline:dark?"#383835":"#c3c2b7", surface:dark?"#1a1a19":"#fcfcfb",
-      buckets:[ dark?"#e66767":"#e34948", dark?"#c98500":"#eda100", dark?"#3987e5":"#2a78d6" ],
+    return { dark:true,
+      text:"#fff", text2:"#c3c2b7", muted:"#898781",
+      grid:"#2c2c2a", baseline:"#383835", surface:"#1a1a19",
+      buckets:[ "#e66767", "#c98500", "#3987e5" ],
       benchmark:"#898781", ramp:["#cde2fb","#9ec5f4","#6da7ec","#3987e5","#256abf","#184f95","#0d366b"] };
   }
   const bucketOf = p => p<0.10?0:(p<0.50?1:2);
@@ -487,11 +478,6 @@ function veteranClimbOut(records, start, end) {
   regionSel.onchange=()=>{ state.region = regionSel.value==="all"?null:+regionSel.value; compute(); renderAll(); updateN(); };
   document.querySelectorAll("#horizon button").forEach(b=>b.onclick=()=>{ state.horizon=+b.dataset.h;
     document.querySelectorAll("#horizon button").forEach(x=>x.setAttribute("aria-pressed",x===b)); v1(); });
-  const themeBtn=document.getElementById("theme"), order=["auto","light","dark"];
-  themeBtn.onclick=()=>{ state.theme=order[(order.indexOf(state.theme)+1)%3];
-    if(state.theme==="auto")document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme",state.theme);
-    themeBtn.textContent="Theme: "+state.theme[0].toUpperCase()+state.theme.slice(1); renderAll(); };
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ if(state.theme==="auto")renderAll(); });
   let rt; addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(renderAll,150);});
 
   compute(); renderAll(); updateN();

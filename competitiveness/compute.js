@@ -38,13 +38,13 @@ const meanPct = (rec, ages) => {
   return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null;
 };
 
-// (1) Decile gradient: early (first-3-season mean) standing decile -> reach year 5 / 10.
+// (1) Decile gradient: early (first-4-season mean) standing decile -> reach year 5 / 10.
 export function gradient(records, start, end) {
   const out = {};
   for (let d = 0; d < 10; d++) out[d] = { s5: 0, n5: 0, s10: 0, n10: 0 };
   for (const rec of records) {
     if (!isRookieInWindow(rec, start, 2019)) continue;
-    const e = meanPct(rec, [0, 1, 2]);
+    const e = meanPct(rec, [0, 1, 2, 3]);   // first four seasons (formative window)
     if (e == null) continue;
     const d = decileOf(e);
     if (rec.r <= 2019 && rec.r + 5 <= end) { out[d].n5++; if (rec.last >= rec.r + 5) out[d].s5++; }
@@ -58,7 +58,7 @@ export function reachByEarlyBucket(records, start, end, horizon, cohortMax) {
   const out = [ {s:0,n:0}, {s:0,n:0}, {s:0,n:0} ];
   for (const rec of records) {
     if (!isRookieInWindow(rec, start, cohortMax)) continue;
-    const e = meanPct(rec, [0, 1, 2]);
+    const e = meanPct(rec, [0, 1, 2, 3]);   // first four seasons (formative window)
     if (e == null || rec.r + horizon > end) continue;
     const b = bucketOf(e);
     out[b].n++; if (rec.last >= rec.r + horizon) out[b].s++;
@@ -72,7 +72,7 @@ export function earlyCurves(records, start, end, maxAge) {
   const N = [0, 0, 0];
   for (const rec of records) {
     if (!isRookieInWindow(rec, start, end)) continue;
-    const e = meanPct(rec, [0, 1, 2]);
+    const e = meanPct(rec, [0, 1, 2, 3]);   // first four seasons (formative window)
     if (e == null) continue;
     const b = bucketOf(e); N[b]++;
     for (let k = 0; k <= maxAge; k++) {

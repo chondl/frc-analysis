@@ -27,12 +27,17 @@ longevity tool's tone.
 - **Competitiveness predicts survival at every age.** P(team active 3 seasons later), by region
   EPA bucket: new teams (age 0–2) 62% / 69% / 80% (bottom-10 / below-median / above-median); by
   age 11+, 78% / 87% / 96%. Monotonic within every age band — not an age artifact.
-- **Early standing forecasts the long run.** Mean region standing over a team's first 3 seasons →
-  reach year 5: **33% / 55% / 70%**; reach year 10: 23% / 41% / 58%.
+- **Early standing forecasts the long run.** Mean region standing over a team's **first 4 seasons**
+  (the standardized formative window) → reach year 5: **27% / 54% / 71%**; reach year 10:
+  18% / 39% / 60%.
 - **The relationship is a smooth gradient with a bottom-decile cliff.** Early-standing decile →
-  reach year 5 climbs monotonically from **33% (bottom decile) to 80% (top decile)**, steep through
+  reach year 5 climbs monotonically from **27% (bottom decile) to 79% (top decile)**, steep through
   the lower half and flattening above the median. New teams skew low (they are ranked against
   regional veterans), so upper buckets are sparse.
+
+**Standardized windows:** the formative window is a team's **first four seasons** (years 1–4);
+the trajectory/recovery view compares **year 1 vs years 2–4**; "established/veteran" begins at
+**age 4+ (year 5 on)** — so the years-1–4 / year-5+ split is consistent across every view.
 - **A rough rookie year is recoverable.** Among teams that started bottom-10% in year 1, survival
   to year 5 by where they got to in years 2–4: stayed bottom **44%**, climbed to below-median 57%,
   climbed to above-median **76%** — nearly matching teams that started strong. Survival tracks the
@@ -69,7 +74,7 @@ Below-median (10–50) / Above-median (50–100).
 
 ## 5. Views (path-first, then established-team risk)
 
-1. **The gradient (headline).** Early (first-3-season) local-standing decile → % reaching year 5
+1. **The gradient (headline).** Early (first-4-season) local-standing decile → % reaching year 5
    (toggle: year 10). A bar/lollipop chart — the smooth climb and the bottom-decile cliff, without
    arbitrary buckets.
 2. **Survival curves by early standing (the spine).** Three fanned survival curves (Bottom-10 /
@@ -116,7 +121,7 @@ competitiveness/
 
 ## 8. Testing & verification
 - `compute.js` unit-tested (node) against §3 golden values: region sizes; decile gradient
-  33%→80%; early buckets 33/55/70 (yr5) and 23/41/58 (yr10); age-controlled monotonicity;
+  27%→79%; early buckets 27/54/71 (yr5) and 18/39/60 (yr10); age-controlled monotonicity;
   recovery 44% vs 76% (yr5); veteran streaks 89.6 / 72.8 / 69.0 / 72.9; climb-out 86.5 vs 75.2.
 - Browser-verified like the longevity tool: each view renders, the region filter recomputes,
   spot-check one series against the Python analysis.

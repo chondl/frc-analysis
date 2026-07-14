@@ -26,16 +26,16 @@ check("10 regions", meta.regions.length === 10, meta.regions.join(","));
 
 // (1) decile gradient 33% -> 80%
 const g = gradient(records, start, end);
-check("decile 0 reach yr5 ~0.33", near(pctv({s:g[0].s5,n:g[0].n5}), 0.33, 0.04), `${pctv({s:g[0].s5,n:g[0].n5}).toFixed(3)}`);
-check("decile 9 reach yr5 ~0.80", near(pctv({s:g[9].s5,n:g[9].n5}), 0.80, 0.06), `${pctv({s:g[9].s5,n:g[9].n5}).toFixed(3)}`);
+check("decile 0 reach yr5 ~0.27", near(pctv({s:g[0].s5,n:g[0].n5}), 0.27, 0.04), `${pctv({s:g[0].s5,n:g[0].n5}).toFixed(3)}`);
+check("decile 9 reach yr5 ~0.79", near(pctv({s:g[9].s5,n:g[9].n5}), 0.79, 0.06), `${pctv({s:g[9].s5,n:g[9].n5}).toFixed(3)}`);
 check("gradient monotonic-ish (d0<d4<d8)",
   pctv({s:g[0].s5,n:g[0].n5}) < pctv({s:g[4].s5,n:g[4].n5}) && pctv({s:g[4].s5,n:g[4].n5}) < pctv({s:g[8].s5,n:g[8].n5}), "not monotonic");
 
 // (2) reach by early bucket
 const r5 = reachByEarlyBucket(records, start, end, 5, 2019).map(pctv);
-check("early buckets reach yr5 ~ 33/55/70", near(r5[0],0.33,0.04)&&near(r5[1],0.55,0.04)&&near(r5[2],0.70,0.04), r5.map(x=>x.toFixed(2)).join("/"));
+check("early buckets reach yr5 ~ 27/54/71", near(r5[0],0.27,0.04)&&near(r5[1],0.54,0.04)&&near(r5[2],0.71,0.04), r5.map(x=>x.toFixed(2)).join("/"));
 const r10 = reachByEarlyBucket(records, start, end, 10, 2014).map(pctv);
-check("early buckets reach yr10 ~ 23/41/58", near(r10[0],0.23,0.05)&&near(r10[1],0.41,0.05)&&near(r10[2],0.58,0.05), r10.map(x=>x.toFixed(2)).join("/"));
+check("early buckets reach yr10 ~ 18/39/60", near(r10[0],0.18,0.05)&&near(r10[1],0.39,0.05)&&near(r10[2],0.60,0.05), r10.map(x=>x.toFixed(2)).join("/"));
 
 // (2b) survival curves exist and fan (top > bottom at age 5)
 const ec = earlyCurves(records, start, end, 16);
