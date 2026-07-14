@@ -9,8 +9,9 @@ codebase, so analysis work and planning docs never diff against that upstream.
 ## Projects
 
 - **[`longevity/`](longevity/)** — team survival & the acquisition-vs-retention question, 2002–2026.
-  A single self-contained interactive tool (`longevity/team-longevity.html`). See
-  [`longevity/README.md`](longevity/README.md).
+  A single self-contained interactive tool. **Live:
+  [chondl.github.io/frc-analysis](https://chondl.github.io/frc-analysis/)** (GitHub Pages, served
+  from `longevity/team-longevity.html`). See [`longevity/README.md`](longevity/README.md).
 
 ## Shared TBA cache
 
