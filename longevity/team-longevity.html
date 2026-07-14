@@ -109,8 +109,9 @@
 <div class="wrap">
   <div class="controls">
     <div class="ctl">
-      <label>Years</label>
-      <select id="yStart"></select><span style="color:var(--muted)">–</span><select id="yEnd"></select>
+      <label>Area</label>
+      <select id="area"></select>
+      <span class="note" id="areaN" style="margin:0"></span>
     </div>
     <span class="prov-key"><svg width="20" height="12"><rect width="20" height="12" fill="url(#provkey)"></rect></svg>2025–26 provisional</span>
     <span class="prov-key"><span style="display:inline-block;width:11px;height:11px;border-radius:3px;background:rgba(227,73,72,.18)"></span>COVID (2020–21)</span>
@@ -185,11 +186,11 @@
   </section>
 
   <section class="view" id="v4">
-    <h2>4 · Departure rate by team generation</h2>
-    <p class="lede">Each line is a <b>generation</b> of teams, grouped by the era they started in. It shows the
-      share of that generation leaving each year. Departures normally <i>fall</i> as a generation matures — so
-      watch the post-COVID jump: nearly every generation, even the veterans who should be stickiest, started
-      leaving faster.</p>
+    <h2>4 · Departure rate by team age</h2>
+    <p class="lede">Each line is teams of a given <b>age</b>, and its height is the share that left the next
+      season. Younger teams churn far more than veterans — but watch the recent uptick <i>across every band</i>:
+      even 11+ year veterans, normally the stickiest teams, have been leaving at a rising rate since COVID.
+      That broad, gentle ramp is the real retention signal.</p>
     <div class="card">
       <div class="chart-scroll"><div id="c4"></div></div>
       <div class="legend" id="l4"></div>
@@ -358,6 +359,28 @@ function departureByGroupYear(records, start, end, groupOf) {
   return out;
 }
 
+// Departure rate per year, split by team AGE band (bands = [{key, lo, hi}] on age =
+// year - rookie_year; hi may be Infinity). Age changes with the year, so a team moves
+// between bands over time. This is the "departure rate by team age over time" view.
+function departureByAgeBandsYear(records, start, end, bands) {
+  const bandOfAge = age => { for (const b of bands) if (age >= b.lo && age <= b.hi) return b.key; return null; };
+  const out = {};
+  for (let y = start + 1; y <= end; y++) {
+    const acc = {};
+    for (const b of bands) acc[b.key] = { dep: 0, base: 0, rate: 0 };
+    for (const rec of records) {
+      if (!activeIn(rec, y - 1, start)) continue;
+      const k = bandOfAge((y - 1) - rec.r);
+      if (k == null) continue;
+      acc[k].base++;
+      if (!activeIn(rec, y, start)) acc[k].dep++;
+    }
+    for (const b of bands) acc[b.key].rate = acc[b.key].base ? acc[b.key].dep / acc[b.key].base : 0;
+    out[y] = acc;
+  }
+  return out;
+}
+
 // Direct age-standardization: apply a fixed standard population (the age composition of
 // standardYears) to each year's band-specific departure rates.
 function standardizedRate(records, start, end, standardYears) {
@@ -444,24 +467,59 @@ function lifespanHistogram(records, end) {
   const trancheOf = yr => TRANCHES.find(t => yr >= t.lo && yr <= t.hi) || null;
   const trancheColor = (t, P) => P.dark ? t.c.dark : t.c.light;
 
-  // ---- precompute (data doesn't depend on view state) ----
-  const active = activeByYear(records, START, END);
-  const fl = flows(records, START, END);
-  const cs = cohortSurvival(records, START, END);
-  const comp = ageComposition(records, START, END);
-  const hist = lifespanHistogram(records, END);
-  const depGrp = departureByGroupYear(records, START, END,
-    r => { const t = trancheOf(r.r); return t ? t.key : null; });
+  // View-4 age bands (departure rate by team age over time). Categorical colors.
+  const V4_BANDS = [
+    { key:"y1_3", label:"1–3 yrs",  lo:0,  hi:2,        c:{light:"#2a78d6", dark:"#3987e5"} },
+    { key:"y4_7", label:"4–7 yrs",  lo:3,  hi:6,        c:{light:"#1baf7a", dark:"#199e70"} },
+    { key:"y8_10",label:"8–10 yrs", lo:7,  hi:9,        c:{light:"#eb6834", dark:"#d95926"} },
+    { key:"y11",  label:"11+ yrs",  lo:10, hi:Infinity, c:{light:"#e34948", dark:"#e66767"} },
+  ];
   const BANDS = AGE_BANDS.map(b => b[0]);
   const BAND_LABEL = { age1:"Rookie yr", age2_3:"2–3 yrs", age4_6:"4–6 yrs",
                        age7_10:"7–10 yrs", age11_15:"11–15 yrs", "16+":"16+ yrs" };
+
+  // ---- location normalization (TBA state_prov mixes full names & abbreviations) ----
+  const US_ABBR = { AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",
+    CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",
+    ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",
+    ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",
+    MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",
+    NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",
+    OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",
+    TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",
+    WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",DC:"District of Columbia" };
+  const normCountry = c => c === "Turkey" ? "Türkiye" : (c === "United States" ? "USA" : c);
+  records.forEach(r => { r.state = r.state ? (US_ABBR[r.state] || r.state) : r.state;
+                         r.country = normCountry(r.country); });
+  const isUS = r => r.country === "USA";
+
+  // ---- area-aware series (recomputed when the Area filter changes) ----
+  let active, fl, cs, comp, hist, depAge;
+  function computeSeries(recs) {
+    active = activeByYear(recs, START, END);
+    fl = flows(recs, START, END);
+    cs = cohortSurvival(recs, START, END);
+    comp = ageComposition(recs, START, END);
+    hist = lifespanHistogram(recs, END);
+    depAge = departureByAgeBandsYear(recs, START, END, V4_BANDS);
+  }
+  function filteredRecords() {
+    const a = state.area;
+    if (!a || a.type === "all") return records;
+    if (a.type === "country") return records.filter(r => r.country === a.name);
+    if (a.type === "state") return records.filter(r => isUS(r) && r.state === a.name);
+    if (a.type === "district") return records.filter(r => isUS(r) && a.states.has(r.state));
+    return records;
+  }
 
   document.getElementById("pull").textContent =
     "Pull date: " + (meta.pullDate || "unknown") + ". Window " + START + "–" + END + ".";
   document.getElementById("src").textContent = START + "–" + END + " · The Blue Alliance";
 
   // ---- state ----
-  const state = { theme: "auto", yStart: START, yEnd: END, metric: "counts", covid: true, cohortMode: "era" };
+  const state = { theme: "auto", yStart: START, yEnd: END, metric: "counts", covid: true,
+                  cohortMode: "era", area: { type: "all" } };
+  computeSeries(records);   // initial: all FRC
 
   function pal() {
     const dark = document.documentElement.getAttribute("data-theme") === "dark" ||
@@ -724,16 +782,17 @@ function lifespanHistogram(records, end) {
     g.append("text").attr("class", "anno").attr("x", iw).attr("y", 4).attr("text-anchor", "end").text("← most teams fold within 3 seasons");
   }
 
-  // ============ VIEW 4: departure rate by team generation ============
+  // ============ VIEW 4: departure rate by team AGE, over time ============
   function view4() {
     const startY = Math.max(state.yStart, RATE_START);
     const yrs = YEARS.filter(y => y > START && y >= startY && y <= state.yEnd);
     const { g, iw, ih, P, pid } = frame("#c4", 320);
-    const MINBASE = 25;   // suppress noisy tiny-sample points
+    const MINBASE = 15;   // suppress noisy tiny-sample points (matters for small areas)
+    const bandColor = b => P.dark ? b.c.dark : b.c.light;
     const x = d3.scaleLinear().domain([startY, state.yEnd]).range([0, iw]);
     let maxR = 0;
-    yrs.forEach(yr => TRANCHES.forEach(t => { const d = depGrp[yr] && depGrp[yr][t.key]; if (d && d.base >= MINBASE) maxR = Math.max(maxR, d.rate); }));
-    const y = d3.scaleLinear().domain([0, maxR * 1.1]).nice().range([ih, 0]);
+    yrs.forEach(yr => V4_BANDS.forEach(b => { const d = depAge[yr] && depAge[yr][b.key]; if (d && d.base >= MINBASE) maxR = Math.max(maxR, d.rate); }));
+    const y = d3.scaleLinear().domain([0, (maxR || 0.2) * 1.1]).nice().range([ih, 0]);
     yGrid(g, y, iw, P, d3.format(".0%"));
     g.append("g").attr("class", "axis").attr("transform", `translate(0,${ih})`)
       .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format("d"))).selectAll("text").attr("dy", "0.9em");
@@ -742,11 +801,11 @@ function lifespanHistogram(records, end) {
     yrs.filter(isProv).forEach(yr => g.append("rect").attr("x", x(yr - .5)).attr("width", Math.abs(x(1) - x(0)))
       .attr("y", 0).attr("height", ih).attr("fill", `url(#${pid})`).attr("pointer-events", "none"));
     const line = d3.line().x(d => x(d.y)).y(d => y(d.r)).curve(d3.curveMonotoneX);
-    TRANCHES.forEach(t => {
-      const pts = yrs.filter(yr => depGrp[yr] && depGrp[yr][t.key] && depGrp[yr][t.key].base >= MINBASE)
-        .map(yr => ({ y: yr, r: depGrp[yr][t.key].rate }));
+    V4_BANDS.forEach(b => {
+      const pts = yrs.filter(yr => depAge[yr] && depAge[yr][b.key] && depAge[yr][b.key].base >= MINBASE)
+        .map(yr => ({ y: yr, r: depAge[yr][b.key].rate }));
       if (pts.length < 2) return;
-      g.append("path").datum(pts).attr("fill", "none").attr("stroke", trancheColor(t, P)).attr("stroke-width", 2.4).attr("d", line);
+      g.append("path").datum(pts).attr("fill", "none").attr("stroke", bandColor(b)).attr("stroke-width", 2.4).attr("d", line);
     });
     const focus = g.append("line").attr("y1", 0).attr("y2", ih).attr("stroke", P.baseline).attr("opacity", 0);
     g.append("rect").attr("width", iw).attr("height", ih).attr("fill", "transparent")
@@ -755,11 +814,11 @@ function lifespanHistogram(records, end) {
         if (yr < startY || yr > state.yEnd) return;
         focus.attr("x1", x(yr)).attr("x2", x(yr)).attr("opacity", 1);
         let rows = "";
-        TRANCHES.forEach(t => { const d = depGrp[yr] && depGrp[yr][t.key];
-          if (d && d.base >= MINBASE) rows += `<div class="row"><span style="color:${trancheColor(t, P)}">${t.label.split(" (")[0]}</span><span>${d3.format(".1%")(d.rate)}</span></div>`; });
+        V4_BANDS.forEach(b => { const d = depAge[yr] && depAge[yr][b.key];
+          if (d && d.base >= MINBASE) rows += `<div class="row"><span style="color:${bandColor(b)}">${b.label}</span><span>${d3.format(".1%")(d.rate)} <span style="color:var(--muted)">(${d.dep}/${d.base})</span></span></div>`; });
         showTip(`<b>${yr}</b>${isProv(yr) ? " (prov.)" : ""}${rows}`, ev);
       }).on("mouseleave", () => { focus.attr("opacity", 0); hideTip(); });
-    legend("#l4", TRANCHES.map(t => [t.label, trancheColor(t, P)]));
+    legend("#l4", V4_BANDS.map(b => [b.label, bandColor(b)]));
   }
 
   // ============ VIEW 5: age composition + median age ============
@@ -818,11 +877,49 @@ function lifespanHistogram(records, end) {
   }
 
   // ---- controls ----
-  const ys = document.getElementById("yStart"), ye = document.getElementById("yEnd");
-  YEARS.forEach(y => { ys.add(new Option(y, y)); ye.add(new Option(y, y)); });
-  ys.value = START; ye.value = END;
-  ys.onchange = () => { state.yStart = +ys.value; if (state.yStart > state.yEnd) { state.yEnd = state.yStart; ye.value = state.yEnd; } renderAll(); };
-  ye.onchange = () => { state.yEnd = +ye.value; if (state.yEnd < state.yStart) { state.yStart = state.yEnd; ys.value = state.yStart; } renderAll(); };
+  // Districts modeled as state-groups: pre-district years naturally fall back to the
+  // constituent states, since we filter on state membership regardless of year.
+  const DISTRICTS = [
+    { key:"fim", label:"FiM — Michigan",       states:["Michigan"] },
+    { key:"fit", label:"FiT — Texas",          states:["Texas"] },
+    { key:"pnw", label:"PNW — Pacific NW",      states:["Washington","Oregon"] },
+    { key:"fma", label:"FMA — Mid-Atlantic",   states:["New Jersey","Delaware","Pennsylvania"] },
+    { key:"ne",  label:"NE — New England",      states:["Connecticut","Massachusetts","Maine","New Hampshire","Rhode Island","Vermont"] },
+    { key:"chs", label:"CHS — Chesapeake",      states:["Maryland","Virginia","District of Columbia"] },
+    { key:"pch", label:"PCH — Georgia",         states:["Georgia"] },
+    { key:"fin", label:"FIN — Indiana",         states:["Indiana"] },
+    { key:"fnc", label:"FNC — North Carolina",  states:["North Carolina"] },
+  ];
+  const areaSel = document.getElementById("area");
+  areaSel.add(new Option("All FRC", "all"));
+  const dg = document.createElement("optgroup"); dg.label = "Districts (state groups)";
+  DISTRICTS.forEach(d => dg.appendChild(new Option(d.label, "d:" + d.key)));
+  areaSel.appendChild(dg);
+  const singleDistrict = new Set(DISTRICTS.filter(d => d.states.length === 1).flatMap(d => d.states));
+  const stCount = {}; records.forEach(r => { if (isUS(r) && r.state) stCount[r.state] = (stCount[r.state] || 0) + 1; });
+  const sg = document.createElement("optgroup"); sg.label = "States";
+  Object.entries(stCount).filter(([s, n]) => n >= 60 && !singleDistrict.has(s)).sort((a, b) => b[1] - a[1]).slice(0, 15)
+    .forEach(([s]) => sg.appendChild(new Option(s, "s:" + s)));
+  areaSel.appendChild(sg);
+  const coCount = {}; records.forEach(r => { if (!isUS(r) && r.country) coCount[r.country] = (coCount[r.country] || 0) + 1; });
+  const cg = document.createElement("optgroup"); cg.label = "Countries";
+  Object.entries(coCount).filter(([c, n]) => n >= 25).sort((a, b) => b[1] - a[1])
+    .forEach(([c]) => cg.appendChild(new Option(c, "c:" + c)));
+  areaSel.appendChild(cg);
+  function updateAreaN() {
+    const n = filteredRecords().length;
+    const nm = state.area.type === "all" ? "All FRC" : (state.area.label || state.area.name);
+    document.getElementById("areaN").textContent = `${nm} · ${n.toLocaleString()} teams`;
+  }
+  areaSel.onchange = () => {
+    const v = areaSel.value;
+    if (v === "all") state.area = { type: "all" };
+    else if (v.startsWith("d:")) { const d = DISTRICTS.find(x => x.key === v.slice(2)); state.area = { type: "district", states: new Set(d.states), label: d.label }; }
+    else if (v.startsWith("s:")) state.area = { type: "state", name: v.slice(2) };
+    else if (v.startsWith("c:")) state.area = { type: "country", name: v.slice(2) };
+    computeSeries(filteredRecords()); renderAll(); updateAreaN();
+  };
+  updateAreaN();
 
   document.querySelectorAll("#metric2 button").forEach(b => b.onclick = () => {
     state.metric = b.dataset.m;

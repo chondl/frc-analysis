@@ -129,6 +129,28 @@ export function departureByGroupYear(records, start, end, groupOf) {
   return out;
 }
 
+// Departure rate per year, split by team AGE band (bands = [{key, lo, hi}] on age =
+// year - rookie_year; hi may be Infinity). Age changes with the year, so a team moves
+// between bands over time. This is the "departure rate by team age over time" view.
+export function departureByAgeBandsYear(records, start, end, bands) {
+  const bandOfAge = age => { for (const b of bands) if (age >= b.lo && age <= b.hi) return b.key; return null; };
+  const out = {};
+  for (let y = start + 1; y <= end; y++) {
+    const acc = {};
+    for (const b of bands) acc[b.key] = { dep: 0, base: 0, rate: 0 };
+    for (const rec of records) {
+      if (!activeIn(rec, y - 1, start)) continue;
+      const k = bandOfAge((y - 1) - rec.r);
+      if (k == null) continue;
+      acc[k].base++;
+      if (!activeIn(rec, y, start)) acc[k].dep++;
+    }
+    for (const b of bands) acc[b.key].rate = acc[b.key].base ? acc[b.key].dep / acc[b.key].base : 0;
+    out[y] = acc;
+  }
+  return out;
+}
+
 // Direct age-standardization: apply a fixed standard population (the age composition of
 // standardYears) to each year's band-specific departure rates.
 export function standardizedRate(records, start, end, standardYears) {

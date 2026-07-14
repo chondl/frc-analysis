@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
   buildRecords, activeByYear, flows, cohortSurvival,
-  departureByAgeYear, departureByGroupYear, standardizedRate, ageComposition, lifespanHistogram,
+  departureByAgeYear, departureByGroupYear, departureByAgeBandsYear,
+  standardizedRate, ageComposition, lifespanHistogram,
 } from "./compute.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -80,6 +81,18 @@ const grp2 = departureByGroupYear(records, start, end, tr);
 check("post-COVID tranche dep > veteran tranche (2024)",
   grp2[2024]["post"].rate > grp2[2024]["vet"].rate,
   `post=${grp2[2024]["post"].rate.toFixed(3)} vet=${grp2[2024]["vet"].rate.toFixed(3)}`);
+
+// 9) departureByAgeBandsYear: young teams leave much more than veterans (2024)
+const ab = departureByAgeBandsYear(records, start, end, [
+  { key: "y1_3", lo: 0, hi: 2 }, { key: "y4_7", lo: 3, hi: 6 },
+  { key: "y8_10", lo: 7, hi: 9 }, { key: "y11", lo: 10, hi: Infinity },
+]);
+check("age-band: young(1–3) dep > veteran(11+) dep, 2024",
+  ab[2024]["y1_3"].rate > ab[2024]["y11"].rate,
+  `young=${ab[2024]["y1_3"].rate.toFixed(3)} vet=${ab[2024]["y11"].rate.toFixed(3)}`);
+check("age-band: veteran(11+) dep rate rose from 2018 to 2024",
+  ab[2024]["y11"].rate > ab[2018]["y11"].rate,
+  `2018=${ab[2018]["y11"].rate.toFixed(3)} 2024=${ab[2024]["y11"].rate.toFixed(3)}`);
 
 console.log(failures === 0 ? "\nALL PASS" : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);
