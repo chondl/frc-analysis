@@ -1,26 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FRC Team Longevity — 2002–2026</title>
 <style>
   :root {
-    --page:#f9f9f7; --surface:#fcfcfb; --text:#0b0b0b; --text2:#52514e;
-    --muted:#898781; --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,.10);
-    --accent:#2a78d6;
-  }
-  :root[data-theme="dark"] {
+    color-scheme: dark;
     --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7;
     --muted:#898781; --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10);
     --accent:#3987e5;
-  }
-  @media (prefers-color-scheme:dark){
-    :root:not([data-theme="light"]){
-      --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7;
-      --muted:#898781; --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10);
-      --accent:#3987e5;
-    }
   }
   * { box-sizing:border-box; }
   html,body { margin:0; }
@@ -103,7 +92,6 @@
     <span class="src" id="src">2002–2026 · The Blue Alliance</span>
     <span class="spacer"></span>
     <a class="btn" style="text-decoration:none" href="../competitiveness/competitiveness.html">Competitiveness &amp; survival →</a>
-    <button class="btn" id="theme">Theme: Auto</button>
   </div>
 </header>
 
@@ -300,14 +288,12 @@
   document.getElementById("src").textContent = START + "–" + END + " · The Blue Alliance";
 
   // ---- state ----
-  const state = { theme: "auto", yStart: START, yEnd: END, metric: "counts", covid: true,
+  const state = { yStart: START, yEnd: END, metric: "counts", covid: true,
                   cohortMode: "era", area: { type: "all" } };
   computeSeries(records);   // initial: all FRC
 
   function pal() {
-    const dark = document.documentElement.getAttribute("data-theme") === "dark" ||
-      (!document.documentElement.getAttribute("data-theme") &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const dark = true;
     return {
       dark,
       text: dark ? "#fff" : "#0b0b0b",
@@ -715,17 +701,6 @@
     document.querySelectorAll("#cohortMode button").forEach(x => x.setAttribute("aria-pressed", x === b));
     view3();
   });
-
-  const themeBtn = document.getElementById("theme");
-  const order = ["auto", "light", "dark"];
-  themeBtn.onclick = () => {
-    state.theme = order[(order.indexOf(state.theme) + 1) % 3];
-    if (state.theme === "auto") document.documentElement.removeAttribute("data-theme");
-    else document.documentElement.setAttribute("data-theme", state.theme);
-    themeBtn.textContent = "Theme: " + state.theme[0].toUpperCase() + state.theme.slice(1);
-    renderAll();
-  };
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (state.theme === "auto") renderAll(); });
 
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 150); });
   renderAll();
