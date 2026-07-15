@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>California Bottom-Decile Watch List — 2023–2026</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10); --accent:#3987e5;
+  }
+  * { box-sizing:border-box; } html,body { margin:0; }
+  body { background:var(--page); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased; }
+  a { color:var(--accent); }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 20px 80px; }
+  header.top { position:sticky; top:0; z-index:20; background:var(--page); border-bottom:1px solid var(--border); backdrop-filter:blur(6px); }
+  header.top .inner { max-width:1080px; margin:0 auto; padding:14px 20px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  header.top h1 { font-size:19px; margin:0; letter-spacing:-.01em; }
+  header.top .src { color:var(--muted); font-size:12.5px; }
+  header.top .spacer { flex:1; }
+  .btn { font:inherit; font-size:13px; color:var(--text2); background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:5px 11px; cursor:pointer; text-decoration:none; }
+  .btn:hover { border-color:var(--muted); }
+  .controls { display:flex; gap:22px; flex-wrap:wrap; align-items:center; padding:16px 0 4px; color:var(--text2); font-size:13px; }
+  .ctl { display:flex; align-items:center; gap:8px; }
+  .ctl label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .seg button { font:inherit; font-size:12.5px; border:0; background:var(--surface); color:var(--text2); padding:5px 12px; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:#fff; }
+  .seg button + button { border-left:1px solid var(--border); }
+  details.method { margin:8px 0 4px; border:1px solid var(--border); border-radius:10px; background:var(--surface); }
+  details.method summary { cursor:pointer; padding:10px 14px; font-size:13px; color:var(--text2); font-weight:600; }
+  details.method .body { padding:0 16px 14px; font-size:13px; color:var(--text2); }
+  details.method .body b { color:var(--text); }
+  .intro { color:var(--text2); font-size:14px; max-width:74ch; margin:18px 0 0; }
+  /* No overflow anywhere on the table's ancestors: `position:sticky` binds to the nearest
+     scrolling ancestor, so any overflow here would scope the sticky thead to this box instead of
+     the viewport (which pins it mid-card and exposes the first row above it). The page scrolls;
+     the table does not get its own scroller. */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:0; margin-top:14px; }
+  .note { color:var(--muted); font-size:12px; margin-top:8px; }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; padding:12px 4px 2px; font-size:12.5px; color:var(--text2); }
+  .legend .k { display:inline-flex; align-items:center; gap:6px; }
+  .legend .sw { width:11px; height:11px; border-radius:3px; border:1px solid rgba(255,255,255,.14); }
+
+  /* Narrow screens scroll the page sideways rather than the table — see .card above. */
+  table { border-collapse:collapse; width:100%; min-width:940px; font-size:13px; }
+  /* --head-h is measured from the site header at runtime; it wraps (and grows) on narrow screens,
+     so a hardcoded offset hides the column header behind it. */
+  thead th { position:sticky; top:var(--head-h,62px); z-index:5; background:#211f1e; color:var(--text2); text-align:left;
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:600; white-space:nowrap;
+    border-bottom:1px solid var(--baseline); padding:0; }
+  thead th button { font:inherit; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:600;
+    color:var(--text2); background:none; border:0; padding:9px 10px; width:100%; text-align:inherit; cursor:pointer;
+    display:flex; align-items:center; gap:5px; }
+  thead th button:hover { color:var(--text); }
+  thead th[aria-sort] button { color:var(--text); }
+  thead th button .arw { color:var(--accent); font-size:9px; visibility:hidden; }
+  thead th[aria-sort] button .arw { visibility:visible; }
+  thead th.num button, td.num { text-align:right; }
+  thead th.num button { justify-content:flex-end; }
+  tbody td { padding:7px 10px; border-bottom:1px solid var(--grid); color:var(--text2); white-space:nowrap; }
+  /* The card can't clip to its radius (no overflow — see above), so the last row rounds itself. */
+  tbody tr:last-child td { border-bottom:0; }
+  tbody tr:last-child td:first-child { border-bottom-left-radius:12px; }
+  tbody tr:last-child td:last-child { border-bottom-right-radius:12px; }
+  tbody tr:hover td { background:rgba(255,255,255,.03); }
+  tbody td.team { color:var(--text); font-variant-numeric:tabular-nums; }
+  tbody td.name { color:var(--text); white-space:normal; min-width:180px; }
+  td.num { font-variant-numeric:tabular-nums; }
+  td.cell { text-align:right; font-variant-numeric:tabular-nums; }
+  tbody tr:hover td.cell { background-image:linear-gradient(rgba(255,255,255,.03),rgba(255,255,255,.03)); }
+  .half-n { color:var(--text2); } .half-s { color:var(--text2); }
+  .empty { padding:28px 14px; color:var(--muted); font-size:13px; }
+  .count { color:var(--muted); font-size:12.5px; }
+/* PALETTE */
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <h1>California Bottom-Decile Watch List</h1>
+    <span class="src">2023–2026 · Statbotics + The Blue Alliance</span>
+    <span class="spacer"></span>
+    <a class="btn" href="../competitiveness/competitiveness.html">← Competitiveness &amp; Survival</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="intro">The California teams that finished in the <b style="color:#ff9a99">bottom 10%</b> of California
+    EPA in at least one season since 2023 — the standing that
+    <a href="../competitiveness/competitiveness.html">marks elevated churn risk</a>. Percentiles are always
+    statewide; the filters only hide rows.</p>
+
+  <div class="controls">
+    <div class="ctl"><label>Area</label>
+      <div class="seg" id="half">
+        <button data-h="all" aria-pressed="true">All California</button>
+        <button data-h="nor" aria-pressed="false">Northern</button>
+        <button data-h="soc" aria-pressed="false">Southern</button>
+      </div></div>
+    <div class="ctl"><label>Played 2026</label>
+      <div class="seg" id="only26">
+        <button data-v="0" aria-pressed="true">All teams</button>
+        <button data-v="1" aria-pressed="false">Still active</button>
+      </div></div>
+    <span class="count" id="count"></span>
+  </div>
+
+  <details class="method">
+    <summary>Definitions, the Northern/Southern line &amp; honest limits</summary>
+    <div class="body">
+      <p><b>Membership:</b> a California team that ranked in the bottom 10% by EPA <i>among California teams</i>
+      in at least one of 2023–2026. Teams need not have played all four seasons — rookies and teams that have
+      since stopped both qualify on the years they did play.</p>
+      <p><b>Percentile</b> = rank by EPA among every California team that competed that season, the same
+      region-relative measure the competitiveness page uses. <b>Overall</b> = the mean of a team's percentiles
+      across only the seasons it played. Percentiles are <b>always statewide</b>, never recomputed within a
+      filtered half — membership is decided statewide, so a half-relative number would disagree with the list.</p>
+      <p><b>Northern vs Southern</b> follows FIRST's <i>California District Details</i> (Rev. Feb 5, 2025), which
+      governs the two 2026 district championships: <i>"The northern border of San Luis Obispo, Kern, and San
+      Bernardino counties is the dividing line… Teams from those three counties, plus Santa Barbara, Ventura,
+      Los Angeles, Orange, Riverside, San Diego, and Imperial counties are considered Southern California teams.
+      Teams in the state's other 48 counties are considered Northern California teams."</i> The rule is purely
+      geographic, so teams that skipped 2026 are placed with no guesswork. County is derived from the team's TBA
+      city — TBA publishes no county, and no team here has coordinates.</p>
+      <p><b>Honest limits:</b> this is <b>correlation</b>, inherited from the parent analysis. EPA likely reflects
+      program resources — mentors, funding, student pipeline — as much as it drives survival. New teams skew low
+      because they are ranked against veterans, and many teams here appear on the strength of a rookie season
+      alone, which the parent page shows is <i>not</i> destiny. This list marks teams worth a look; it does not
+      diagnose one.</p>
+      <p class="note" id="pull"></p>
+    </div>
+  </details>
+
+  <div class="legend">
+    <span class="k"><span class="sw" style="background:#e34948"></span>Bottom 10%</span>
+    <span class="k"><span class="sw" style="background:#eda100"></span>Below median</span>
+    <span class="k"><span class="sw" style="background:#2a78d6"></span>Above median</span>
+    <span class="k"><span class="sw" style="background:#8b6fd6"></span>gone — no season since</span>
+    <span class="k"><span class="sw" style="background:#3f3f3c"></span>— not yet a team · out — sat out</span>
+  </div>
+
+  <div class="card">
+    <table id="tbl">
+      <thead><tr id="hrow"></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden>No teams match these filters.</div>
+  </div>
+
+  <p class="note" style="margin-top:24px">Data: EPA from Statbotics, participation and team details from The Blue
+    Alliance. Presented as supporting material — the figures are shown straight, for you to interpret.</p>
+</div>
+
+<!-- COMPUTE -->
+<!-- DATA -->
+<script>
+(function () {
+  const D = window.DATA;
+  const rows = buildRows(D);
+  const state = { half: "all", only2026: false, key: "team", dir: 1 };
+
+  const COLS = [
+    { key: "team",    label: "Team",   cls: "num" },
+    { key: "name",    label: "Name" },
+    { key: "county",  label: "County" },
+    { key: "city",    label: "City" },
+    { key: "half",    label: "Area" },
+    { key: "overall", label: "Overall", cls: "num" },
+    ...D.years.map(y => ({ key: String(y), label: String(y), cls: "num" })),
+  ];
+  const CLS = ["bottom10", "below", "above"];
+  const pctText = p => (p * 100).toFixed(0) + "%";
+
+  const hrow = document.getElementById("hrow");
+  hrow.innerHTML = COLS.map(c =>
+    `<th class="${c.cls || ""}" data-key="${c.key}"><button type="button">${c.label}<span class="arw">▲</span></button></th>`
+  ).join("");
+  hrow.querySelectorAll("th").forEach(th => {
+    th.querySelector("button").addEventListener("click", () => {
+      const k = th.dataset.key;
+      // Re-clicking the active column flips it; a new column starts ascending.
+      state.dir = state.key === k ? -state.dir : 1;
+      state.key = k;
+      render();
+    });
+  });
+
+  function cellHTML(rec, y) {
+    const s = cellState(rec, y);
+    if (s.kind === "pct")
+      return `<td class="cell c-${CLS[s.bucket]}" title="${pctText(s.p)} of California, ${y}">${pctText(s.p)}</td>`;
+    if (s.kind === "gone")
+      return `<td class="cell c-gone" title="No season since ${rec.last}">gone</td>`;
+    if (s.kind === "gap")
+      return `<td class="cell c-notyet" title="Sat out ${y}; played before and after">out</td>`;
+    return `<td class="cell c-notyet" title="Not yet a team — first season ${rec.first}">—</td>`;
+  }
+
+  function render() {
+    const view = sortRows(filterRows(rows, { half: state.half, only2026: state.only2026 }),
+                          state.key, state.dir);
+    document.getElementById("tbody").innerHTML = view.map(r => `<tr>
+      <td class="team num">${r.team}</td>
+      <td class="name">${r.n.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</td>
+      <td>${r.c}</td>
+      <td>${r.y}</td>
+      <td class="${r.h ? "half-s" : "half-n"}">${r.h ? "Southern" : "Northern"}</td>
+      <td class="cell c-${CLS[bucketOf(r.overall)]}">${pctText(r.overall)}</td>
+      ${D.years.map(y => cellHTML(r, y)).join("")}
+    </tr>`).join("");
+
+    document.getElementById("empty").hidden = view.length > 0;
+    const nSoc = view.filter(r => r.h === 1).length;
+    document.getElementById("count").textContent =
+      `${view.length} team${view.length === 1 ? "" : "s"} · ${view.length - nSoc} northern / ${nSoc} southern`;
+
+    hrow.querySelectorAll("th").forEach(th => {
+      const on = th.dataset.key === state.key;
+      if (on) th.setAttribute("aria-sort", state.dir === 1 ? "ascending" : "descending");
+      else th.removeAttribute("aria-sort");
+      th.querySelector(".arw").textContent = state.dir === 1 ? "▲" : "▼";
+    });
+  }
+
+  function seg(id, fn) {
+    const el = document.getElementById(id);
+    el.addEventListener("click", e => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      el.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+      fn(b);
+      render();
+    });
+  }
+  seg("half", b => { state.half = b.dataset.h; });
+  seg("only26", b => { state.only2026 = b.dataset.v === "1"; });
+
+  // The sticky column header pins directly under the site header, which wraps and changes height
+  // with viewport width — so measure it rather than hardcoding an offset.
+  const site = document.querySelector("header.top");
+  const setHeadH = () =>
+    document.documentElement.style.setProperty("--head-h", site.offsetHeight + "px");
+  new ResizeObserver(setHeadH).observe(site);
+  setHeadH();
+
+  if (D.pull_date) document.getElementById("pull").textContent = "Data pulled " + D.pull_date + ".";
+  render();
+})();
+</script>
+</body>
+</html>

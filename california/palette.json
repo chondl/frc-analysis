@@ -1,0 +1,11 @@
+{
+  "_comment": "Cell colors for the watch-list table. Single source of truth: build.py generates the CSS from this, and compute.test.mjs asserts every fg clears WCAG AA (4.5:1) against its own tint composited over `surface`. The page is dark-only, so contrast is checked, not eyeballed. Hues match the competitiveness page's buckets; `gone` gets its own hue because churn is the outcome this page is about.",
+  "surface": "#1a1a19",
+  "cells": {
+    "bottom10": { "fg": "#ff9a99", "tint": "#e34948", "alpha": 0.18 },
+    "below":    { "fg": "#f7c85c", "tint": "#eda100", "alpha": 0.16 },
+    "above":    { "fg": "#8fbdf5", "tint": "#2a78d6", "alpha": 0.20 },
+    "gone":     { "fg": "#c1abf8", "tint": "#8b6fd6", "alpha": 0.22 },
+    "notyet":   { "fg": "#9a9892", "tint": "#2c2c2a", "alpha": 0.55 }
+  }
+}

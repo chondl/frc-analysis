@@ -114,10 +114,10 @@ suite, not by eye.
 Follows the repo's established per-analysis layout.
 
 ```
-pull_teams.py ──► ca_teams.json ─┐
-                                 ├─► build.py ──► data.json + california.html
-competitiveness/epa.json ────────┤              (compute.js + data inlined)
-longevity/team_participation.json ┘
+pull_teams.py ────────────────────► teams.json ─┐
+                                                ├─► build.py ──► data.json + california.html
+competitiveness/epa.json ───────────────────────┤              (compute.js + palette inlined)
+longevity/team_participation.json ──────────────┘
 ```
 
 - **`pull_teams.py`** — TBA `nickname` + `city` per team. Reads the shared `cache/tba/` (already

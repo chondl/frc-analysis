@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>California Bottom-Decile Watch List — 2023–2026</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --text:#fff; --text2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10); --accent:#3987e5;
+  }
+  * { box-sizing:border-box; } html,body { margin:0; }
+  body { background:var(--page); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased; }
+  a { color:var(--accent); }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 20px 80px; }
+  header.top { position:sticky; top:0; z-index:20; background:var(--page); border-bottom:1px solid var(--border); backdrop-filter:blur(6px); }
+  header.top .inner { max-width:1080px; margin:0 auto; padding:14px 20px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  header.top h1 { font-size:19px; margin:0; letter-spacing:-.01em; }
+  header.top .src { color:var(--muted); font-size:12.5px; }
+  header.top .spacer { flex:1; }
+  .btn { font:inherit; font-size:13px; color:var(--text2); background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:5px 11px; cursor:pointer; text-decoration:none; }
+  .btn:hover { border-color:var(--muted); }
+  .controls { display:flex; gap:22px; flex-wrap:wrap; align-items:center; padding:16px 0 4px; color:var(--text2); font-size:13px; }
+  .ctl { display:flex; align-items:center; gap:8px; }
+  .ctl label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .seg button { font:inherit; font-size:12.5px; border:0; background:var(--surface); color:var(--text2); padding:5px 12px; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:#fff; }
+  .seg button + button { border-left:1px solid var(--border); }
+  details.method { margin:8px 0 4px; border:1px solid var(--border); border-radius:10px; background:var(--surface); }
+  details.method summary { cursor:pointer; padding:10px 14px; font-size:13px; color:var(--text2); font-weight:600; }
+  details.method .body { padding:0 16px 14px; font-size:13px; color:var(--text2); }
+  details.method .body b { color:var(--text); }
+  .intro { color:var(--text2); font-size:14px; max-width:74ch; margin:18px 0 0; }
+  /* No overflow anywhere on the table's ancestors: `position:sticky` binds to the nearest
+     scrolling ancestor, so any overflow here would scope the sticky thead to this box instead of
+     the viewport (which pins it mid-card and exposes the first row above it). The page scrolls;
+     the table does not get its own scroller. */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:0; margin-top:14px; }
+  .note { color:var(--muted); font-size:12px; margin-top:8px; }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; padding:12px 4px 2px; font-size:12.5px; color:var(--text2); }
+  .legend .k { display:inline-flex; align-items:center; gap:6px; }
+  .legend .sw { width:11px; height:11px; border-radius:3px; border:1px solid rgba(255,255,255,.14); }
+
+  /* Narrow screens scroll the page sideways rather than the table — see .card above. */
+  table { border-collapse:collapse; width:100%; min-width:940px; font-size:13px; }
+  /* --head-h is measured from the site header at runtime; it wraps (and grows) on narrow screens,
+     so a hardcoded offset hides the column header behind it. */
+  thead th { position:sticky; top:var(--head-h,62px); z-index:5; background:#211f1e; color:var(--text2); text-align:left;
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:600; white-space:nowrap;
+    border-bottom:1px solid var(--baseline); padding:0; }
+  thead th button { font:inherit; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:600;
+    color:var(--text2); background:none; border:0; padding:9px 10px; width:100%; text-align:inherit; cursor:pointer;
+    display:flex; align-items:center; gap:5px; }
+  thead th button:hover { color:var(--text); }
+  thead th[aria-sort] button { color:var(--text); }
+  thead th button .arw { color:var(--accent); font-size:9px; visibility:hidden; }
+  thead th[aria-sort] button .arw { visibility:visible; }
+  thead th.num button, td.num { text-align:right; }
+  thead th.num button { justify-content:flex-end; }
+  tbody td { padding:7px 10px; border-bottom:1px solid var(--grid); color:var(--text2); white-space:nowrap; }
+  /* The card can't clip to its radius (no overflow — see above), so the last row rounds itself. */
+  tbody tr:last-child td { border-bottom:0; }
+  tbody tr:last-child td:first-child { border-bottom-left-radius:12px; }
+  tbody tr:last-child td:last-child { border-bottom-right-radius:12px; }
+  tbody tr:hover td { background:rgba(255,255,255,.03); }
+  tbody td.team { color:var(--text); font-variant-numeric:tabular-nums; }
+  tbody td.name { color:var(--text); white-space:normal; min-width:180px; }
+  td.num { font-variant-numeric:tabular-nums; }
+  td.cell { text-align:right; font-variant-numeric:tabular-nums; }
+  tbody tr:hover td.cell { background-image:linear-gradient(rgba(255,255,255,.03),rgba(255,255,255,.03)); }
+  .half-n { color:var(--text2); } .half-s { color:var(--text2); }
+  .empty { padding:28px 14px; color:var(--muted); font-size:13px; }
+  .count { color:var(--muted); font-size:12.5px; }
+  td.c-bottom10 { color:#ff9a99; background:rgba(227,73,72,0.18); }
+  td.c-below { color:#f7c85c; background:rgba(237,161,0,0.16); }
+  td.c-above { color:#8fbdf5; background:rgba(42,120,214,0.2); }
+  td.c-gone { color:#c1abf8; background:rgba(139,111,214,0.22); }
+  td.c-notyet { color:#9a9892; background:rgba(44,44,42,0.55); }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <h1>California Bottom-Decile Watch List</h1>
+    <span class="src">2023–2026 · Statbotics + The Blue Alliance</span>
+    <span class="spacer"></span>
+    <a class="btn" href="../competitiveness/competitiveness.html">← Competitiveness &amp; Survival</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="intro">The California teams that finished in the <b style="color:#ff9a99">bottom 10%</b> of California
+    EPA in at least one season since 2023 — the standing that
+    <a href="../competitiveness/competitiveness.html">marks elevated churn risk</a>. Percentiles are always
+    statewide; the filters only hide rows.</p>
+
+  <div class="controls">
+    <div class="ctl"><label>Area</label>
+      <div class="seg" id="half">
+        <button data-h="all" aria-pressed="true">All California</button>
+        <button data-h="nor" aria-pressed="false">Northern</button>
+        <button data-h="soc" aria-pressed="false">Southern</button>
+      </div></div>
+    <div class="ctl"><label>Played 2026</label>
+      <div class="seg" id="only26">
+        <button data-v="0" aria-pressed="true">All teams</button>
+        <button data-v="1" aria-pressed="false">Still active</button>
+      </div></div>
+    <span class="count" id="count"></span>
+  </div>
+
+  <details class="method">
+    <summary>Definitions, the Northern/Southern line &amp; honest limits</summary>
+    <div class="body">
+      <p><b>Membership:</b> a California team that ranked in the bottom 10% by EPA <i>among California teams</i>
+      in at least one of 2023–2026. Teams need not have played all four seasons — rookies and teams that have
+      since stopped both qualify on the years they did play.</p>
+      <p><b>Percentile</b> = rank by EPA among every California team that competed that season, the same
+      region-relative measure the competitiveness page uses. <b>Overall</b> = the mean of a team's percentiles
+      across only the seasons it played. Percentiles are <b>always statewide</b>, never recomputed within a
+      filtered half — membership is decided statewide, so a half-relative number would disagree with the list.</p>
+      <p><b>Northern vs Southern</b> follows FIRST's <i>California District Details</i> (Rev. Feb 5, 2025), which
+      governs the two 2026 district championships: <i>"The northern border of San Luis Obispo, Kern, and San
+      Bernardino counties is the dividing line… Teams from those three counties, plus Santa Barbara, Ventura,
+      Los Angeles, Orange, Riverside, San Diego, and Imperial counties are considered Southern California teams.
+      Teams in the state's other 48 counties are considered Northern California teams."</i> The rule is purely
+      geographic, so teams that skipped 2026 are placed with no guesswork. County is derived from the team's TBA
+      city — TBA publishes no county, and no team here has coordinates.</p>
+      <p><b>Honest limits:</b> this is <b>correlation</b>, inherited from the parent analysis. EPA likely reflects
+      program resources — mentors, funding, student pipeline — as much as it drives survival. New teams skew low
+      because they are ranked against veterans, and many teams here appear on the strength of a rookie season
+      alone, which the parent page shows is <i>not</i> destiny. This list marks teams worth a look; it does not
+      diagnose one.</p>
+      <p class="note" id="pull"></p>
+    </div>
+  </details>
+
+  <div class="legend">
+    <span class="k"><span class="sw" style="background:#e34948"></span>Bottom 10%</span>
+    <span class="k"><span class="sw" style="background:#eda100"></span>Below median</span>
+    <span class="k"><span class="sw" style="background:#2a78d6"></span>Above median</span>
+    <span class="k"><span class="sw" style="background:#8b6fd6"></span>gone — no season since</span>
+    <span class="k"><span class="sw" style="background:#3f3f3c"></span>— not yet a team · out — sat out</span>
+  </div>
+
+  <div class="card">
+    <table id="tbl">
+      <thead><tr id="hrow"></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden>No teams match these filters.</div>
+  </div>
+
+  <p class="note" style="margin-top:24px">Data: EPA from Statbotics, participation and team details from The Blue
+    Alliance. Presented as supporting material — the figures are shown straight, for you to interpret.</p>
+</div>
+
+<script>// compute.js — pure derivation for the California bottom-decile watch list.
+// Unit-tested with node (compute.test.mjs), inlined into the page by build.py. No DOM.
+//
+// A record from data.json: {n, c, y, h, ys:{year->pct|null}, first, last}
+//   n=nickname, c=county, y=city, h=half (0=NorCal, 1=SoCal), first/last = first/last season
+//   played (any year, not just the window), ys = statewide-CA EPA percentile per window year the
+//   team played. Percentiles are always statewide — filters hide rows, never recompute numbers.
+//
+// Buckets match the competitiveness page exactly: Bottom 10% / Below median / Above median.
+
+const YEARS = [2023, 2024, 2025, 2026];
+const bucketOf = p => (p < 0.10 ? 0 : p < 0.50 ? 1 : 2);
+
+// Cell state for a team-year. Absence splits three ways, and the split is the point:
+// "gone" is the churn this page is about, "notyet" is a team that didn't exist, "gap" is a team
+// that sat out and came back.
+function cellState(rec, year) {
+  const p = rec.ys[year];
+  if (p != null) return { kind: "pct", p, bucket: bucketOf(p) };
+  if (year < rec.first) return { kind: "notyet" };
+  if (year > rec.last) return { kind: "gone" };
+  return { kind: "gap" };
+}
+
+// Mean of the team's percentiles over the years it actually played — the same derivation as
+// meanPct() on the competitiveness page, so the number agrees with the parent.
+function overallPct(rec) {
+  const v = YEARS.map(y => rec.ys[y]).filter(p => p != null);
+  return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null;
+}
+
+const playedIn = (rec, year) => rec.ys[year] != null;
+const bottomYears = rec => YEARS.filter(y => rec.ys[y] != null && rec.ys[y] < 0.10).length;
+
+function buildRows(data) {
+  return Object.entries(data.teams).map(([tn, t]) => {
+    // data.json stores percentiles as integer per-mille (as the competitiveness page does);
+    // everything downstream works in 0..1 fractions.
+    const ys = {};
+    for (const [k, v] of Object.entries(t.ys)) ys[+k] = v / 1000;
+    const rec = { team: +tn, n: t.n, c: t.c, y: t.y, h: t.h, ys, first: t.first, last: t.last };
+    rec.overall = overallPct(rec);
+    rec.active26 = playedIn(rec, 2026);
+    rec.nBottom = bottomYears(rec);
+    return rec;
+  });
+}
+
+// half: "all" | "nor" | "soc"; only2026: boolean. Hides rows only.
+function filterRows(rows, { half = "all", only2026 = false } = {}) {
+  return rows.filter(r => {
+    if (half === "nor" && r.h !== 0) return false;
+    if (half === "soc" && r.h !== 1) return false;
+    if (only2026 && !r.active26) return false;
+    return true;
+  });
+}
+
+// Sort by any column. Nulls (a year not played, or no overall) always sort last regardless of
+// direction — an absent value is not a low value, and letting it rank as one would put churned
+// teams at the "worst" end of an ascending percentile sort.
+function sortRows(rows, key, dir = 1) {
+  const val = r =>
+    key === "team" ? r.team
+    : key === "name" ? (r.n || "")
+    : key === "county" ? r.c
+    : key === "city" ? r.y
+    : key === "half" ? (r.h === 0 ? "Northern California" : "Southern California")
+    : key === "overall" ? r.overall
+    : r.ys[+key];
+  const out = [...rows];
+  out.sort((a, b) => {
+    const x = val(a), y = val(b);
+    const xn = x == null, yn = y == null;
+    if (xn || yn) return xn && yn ? a.team - b.team : xn ? 1 : -1;
+    const c = typeof x === "string" ? x.localeCompare(y) : x - y;
+    return c !== 0 ? c * dir : a.team - b.team;
+  });
+  return out;
+}
+</script>
+<script>window.DATA={"years": [2023, 2024, 2025, 2026], "pull_date": "2026-07-14", "teams": {"867": {"n": "Absolute Value", "c": "Los Angeles", "y": "Arcadia", "h": 1, "first": 2002, "last": 2026, "ys": {"2023": 70, "2024": 206, "2025": 20, "2026": 41}}, "1159": {"n": "Ramona Rampage", "c": "Los Angeles", "y": "Alhambra", "h": 1, "first": 2003, "last": 2026, "ys": {"2023": 301, "2024": 160, "2025": 38, "2026": 165}}, "1266": {"n": "The Devil Duckies", "c": "San Diego", "y": "San Diego", "h": 1, "first": 2004, "last": 2024, "ys": {"2023": 360, "2024": 60}}, "1280": {"n": "Ragin' C-Biscuits", "c": "Contra Costa", "y": "Danville", "h": 0, "first": 2004, "last": 2026, "ys": {"2023": 219, "2024": 523, "2025": 357, "2026": 93}}, "1422": {"n": "The Neon Knights", "c": "Fresno", "y": "Fresno", "h": 0, "first": 2004, "last": 2023, "ys": {"2023": 63}}, "1759": {"n": "Potatoes", "c": "Los Angeles", "y": "El Segundo", "h": 1, "first": 2006, "last": 2026, "ys": {"2023": 29, "2024": 10, "2025": 3, "2026": 244}}, "1972": {"n": "Searing Engineering", "c": "Imperial", "y": "El Centro", "h": 1, "first": 2006, "last": 2026, "ys": {"2023": 163, "2024": 327, "2025": 118, "2026": 24}}, "2141": {"n": "Spartronics", "c": "Contra Costa", "y": "Concord", "h": 0, "first": 2007, "last": 2026, "ys": {"2023": 48, "2024": 170, "2025": 381, "2026": 462}}, "2367": {"n": "Lancer Robotics", "c": "Santa Clara", "y": "Mountain View", "h": 0, "first": 2008, "last": 2026, "ys": {"2023": 256, "2024": 274, "2025": 111, "2026": 86}}, "2404": {"n": "Team NEY Techs (TNT)", "c": "Los Angeles", "y": "Pasadena", "h": 1, "first": 2008, "last": 2026, "ys": {"2023": 89, "2024": 156, "2025": 500, "2026": 637}}, "2827": {"n": "LEGION Robotics", "c": "San Diego", "y": "Coronado", "h": 1, "first": 2009, "last": 2026, "ys": {"2023": 200, "2024": 202, "2025": 208, "2026": 48}}, "2839": {"n": "Daedalus", "c": "San Diego", "y": "Escondido", "h": 1, "first": 2009, "last": 2026, "ys": {"2023": 776, "2024": 487, "2025": 625, "2026": 17}}, "3020": {"n": "SMbld", "c": "Orange", "y": "Rancho Santa Margarita", "h": 1, "first": 2009, "last": 2026, "ys": {"2023": 18, "2024": 81, "2025": 520, "2026": 155}}, "3328": {"n": "NoHoRobo", "c": "Los Angeles", "y": "North Hollywood", "h": 1, "first": 2010, "last": 2026, "ys": {"2023": 185, "2024": 92, "2025": 52, "2026": 368}}, "3704": {"n": "RoboSapiens", "c": "San Diego", "y": "National City", "h": 1, "first": 2011, "last": 2026, "ys": {"2023": 189, "2024": 355, "2025": 215, "2026": 10}}, "3925": {"n": "Ventura Robotics", "c": "Ventura", "y": "Ventura", "h": 1, "first": 2012, "last": 2026, "ys": {"2023": 304, "2024": 633, "2025": 97, "2026": 472}}, "4019": {"n": "Mechanical Paradise", "c": "Los Angeles", "y": "Studio City", "h": 1, "first": 2012, "last": 2026, "ys": {"2023": 0, "2024": 323, "2025": 6, "2026": 75}}, "4171": {"n": "BayBots", "c": "Monterey", "y": "Seaside", "h": 0, "first": 2012, "last": 2026, "ys": {"2023": 245, "2024": 195, "2025": 93, "2026": 217}}, "4643": {"n": "Butte Built Bots", "c": "Butte", "y": "Oroville", "h": 0, "first": 2013, "last": 2026, "ys": {"2023": 289, "2024": 74, "2025": 246, "2026": 0}}, "4711": {"n": "The Flying Aces", "c": "Ventura", "y": "Camarillo", "h": 1, "first": 2013, "last": 2026, "ys": {"2023": 144, "2024": 28, "2025": 31, "2026": 137}}, "4765": {"n": "PWRUP", "c": "Santa Clara", "y": "Los Altos Hills", "h": 0, "first": 2013, "last": 2026, "ys": {"2023": 96, "2024": 722, "2025": 576, "2026": 496}}, "4919": {"n": "Team Ronin", "c": "San Diego", "y": "La Mesa", "h": 1, "first": 2014, "last": 2026, "ys": {"2023": 197, "2024": 99, "2025": 288, "2026": 258}}, "4973": {"n": "Gator Gears", "c": "San Francisco", "y": "San Francisco", "h": 0, "first": 2014, "last": 2026, "ys": {"2023": 353, "2024": 302, "2025": 100, "2026": 68}}, "5012": {"n": "Gryffingear", "c": "Los Angeles", "y": "Palmdale", "h": 1, "first": 2014, "last": 2026, "ys": {"2023": 74, "2024": 199, "2025": 680, "2026": 713}}, "5027": {"n": "Event Horizon (5027)", "c": "Santa Clara", "y": "San Jose", "h": 0, "first": 2014, "last": 2026, "ys": {"2023": 130, "2024": 3, "2025": 13, "2026": 62}}, "5430": {"n": "Pirate Robolution", "c": "Contra Costa", "y": "Pittsburg", "h": 0, "first": 2015, "last": 2026, "ys": {"2023": 278, "2024": 245, "2025": 177, "2026": 37}}, "5500": {"n": "Jaguars Robotics & ROVs", "c": "Los Angeles", "y": "Long Beach", "h": 1, "first": 2015, "last": 2026, "ys": {"2023": 137, "2024": 42, "2025": 326, "2026": 193}}, "5669": {"n": "Techmen", "c": "Los Angeles", "y": "Rosemead", "h": 1, "first": 2015, "last": 2026, "ys": {"2023": 7, "2024": 174, "2025": 187, "2026": 565}}, "5728": {"n": "MC2", "c": "Sonoma", "y": "Santa Rosa", "h": 0, "first": 2015, "last": 2026, "ys": {"2023": 323, "2024": 21, "2025": 104, "2026": 265}}, "5805": {"n": "SMbly Required", "c": "Orange", "y": "Rancho Santa Margarita", "h": 1, "first": 2016, "last": 2026, "ys": {"2023": 33, "2024": 288, "2025": 482, "2026": 596}}, "5857": {"n": "Walnut Valley Robotics", "c": "Los Angeles", "y": "Walnut", "h": 1, "first": 2016, "last": 2026, "ys": {"2023": 81, "2024": 7, "2025": 131, "2026": 310}}, "6000": {"n": "Firehawk Robotics", "c": "Los Angeles", "y": "Los Angeles", "h": 1, "first": 2016, "last": 2026, "ys": {"2023": 631, "2024": 131, "2025": 114, "2026": 51}}, "6060": {"n": "Circuit Serpents", "c": "Kern", "y": "Rosamond", "h": 1, "first": 2016, "last": 2026, "ys": {"2023": 286, "2024": 569, "2025": 27, "2026": 317}}, "6553": {"n": "Roboticus", "c": "Ventura", "y": "Oxnard", "h": 1, "first": 2017, "last": 2025, "ys": {"2025": 34}}, "6658": {"n": "Rockbotics", "c": "Los Angeles", "y": "Los Angeles", "h": 1, "first": 2017, "last": 2026, "ys": {"2023": 498, "2024": 227, "2025": 90, "2026": 237}}, "6665": {"n": "C-Otters", "c": "Monterey", "y": "Monterey", "h": 0, "first": 2017, "last": 2026, "ys": {"2023": 133, "2024": 39, "2025": 604, "2026": 531}}, "6695": {"n": "GalvaKnights", "c": "San Diego", "y": "San Marcos", "h": 1, "first": 2017, "last": 2026, "ys": {"2023": 546, "2024": 220, "2025": 59, "2026": 724}}, "6711": {"n": "Millennial Falcons", "c": "Merced", "y": "Atwater", "h": 0, "first": 2017, "last": 2024, "ys": {"2023": 44, "2024": 56}}, "6764": {"n": "Flash Drives", "c": "Ventura", "y": "Fillmore", "h": 1, "first": 2017, "last": 2026, "ys": {"2023": 3, "2024": 85, "2025": 48, "2026": 34}}, "6804": {"n": "Team Wolfpack", "c": "Merced", "y": "Livingston", "h": 0, "first": 2018, "last": 2024, "ys": {"2024": 17}}, "6822": {"n": "THE SHISHKABOTS", "c": "Santa Clara", "y": "Sunnyvale", "h": 0, "first": 2018, "last": 2026, "ys": {"2023": 438, "2024": 78, "2025": 149, "2026": 117}}, "6885": {"n": "The Pilots", "c": "San Diego", "y": "San Diego", "h": 1, "first": 2018, "last": 2026, "ys": {"2023": 11, "2024": 334, "2025": 190, "2026": 196}}, "6904": {"n": "TeraWatts", "c": "Los Angeles", "y": "Los Angeles", "h": 1, "first": 2018, "last": 2026, "ys": {"2023": 386, "2024": 14, "2025": 17, "2026": 55}}, "6934": {"n": "Scorps", "c": "Ventura", "y": "Camarillo", "h": 1, "first": 2018, "last": 2026, "ys": {"2023": 178, "2024": 110, "2025": 86, "2026": 710}}, "6981": {"n": "Clockwork Concord", "c": "Contra Costa", "y": "Concord", "h": 0, "first": 2018, "last": 2026, "ys": {"2023": 59, "2024": 0, "2025": 298, "2026": 20}}, "7185": {"n": "TartanBots", "c": "Los Angeles", "y": "Glendora", "h": 1, "first": 2018, "last": 2023, "ys": {"2023": 22}}, "7230": {"n": "Mythic Mechanix", "c": "Orange", "y": "Irvine", "h": 1, "first": 2018, "last": 2026, "ys": {"2023": 275, "2024": 32, "2025": 621, "2026": 382}}, "7245": {"n": "LionBot Robotics", "c": "Alameda", "y": "San Lorenzo", "h": 0, "first": 2018, "last": 2026, "ys": {"2023": 215, "2024": 370, "2025": 24, "2026": 300}}, "7327": {"n": "Metal Jackets", "c": "Ventura", "y": "Oxnard", "h": 1, "first": 2018, "last": 2026, "ys": {"2023": 111, "2024": 249, "2025": 329, "2026": 3}}, "7401": {"n": "DevTech117", "c": "Contra Costa", "y": "Concord", "h": 0, "first": 2019, "last": 2025, "ys": {"2023": 14, "2024": 53, "2025": 156}}, "7607": {"n": "The Blackbirds", "c": "Los Angeles", "y": "Palmdale", "h": 1, "first": 2019, "last": 2026, "ys": {"2023": 40, "2024": 117, "2025": 79, "2026": 448}}, "7686": {"n": "Acabots", "c": "Contra Costa", "y": "Lafayette", "h": 0, "first": 2019, "last": 2024, "ys": {"2023": 66, "2024": 46}}, "8006": {"n": "The Phantoms", "c": "Los Angeles", "y": "Los Angeles", "h": 1, "first": 2020, "last": 2026, "ys": {"2023": 78, "2024": 24, "2025": 197, "2026": 158}}, "8045": {"n": "The Wallace Dynasty", "c": "Alameda", "y": "Castro Valley", "h": 0, "first": 2020, "last": 2026, "ys": {"2023": 104, "2024": 149, "2025": 375, "2026": 44}}, "8060": {"n": "Command B", "c": "Los Angeles", "y": "Valencia", "h": 1, "first": 2020, "last": 2026, "ys": {"2023": 37, "2024": 71, "2025": 10, "2026": 296}}, "8533": {"n": "Rancho Reapers", "c": "Ventura", "y": "Camarillo", "h": 1, "first": 2021, "last": 2026, "ys": {"2023": 52, "2024": 142, "2025": 107, "2026": 186}}, "8537": {"n": "MechanicAnts", "c": "San Diego", "y": "Imperial Beach", "h": 1, "first": 2021, "last": 2023, "ys": {"2023": 85}}, "8751": {"n": "Miramonte Robotics Team", "c": "Contra Costa", "y": "Orinda", "h": 0, "first": 2022, "last": 2026, "ys": {"2023": 211, "2025": 41, "2026": 31}}, "8870": {"n": "RedCards", "c": "San Diego", "y": "San Diego", "h": 1, "first": 2022, "last": 2026, "ys": {"2023": 107, "2024": 96, "2025": 267, "2026": 65}}, "8891": {"n": "Wild Raccoons", "c": "San Diego", "y": "Oceanside", "h": 1, "first": 2022, "last": 2026, "ys": {"2023": 92, "2024": 533, "2025": 586, "2026": 110}}, "8898": {"n": "Royal Rebel Robotics", "c": "Orange", "y": "Fullerton", "h": 1, "first": 2022, "last": 2026, "ys": {"2023": 263, "2024": 177, "2025": 0, "2026": 13}}, "9006": {"n": "Crescent Wing Robotics", "c": "Santa Clara", "y": "San Jose", "h": 0, "first": 2023, "last": 2025, "ys": {"2023": 334, "2024": 320, "2025": 72}}, "9114": {"n": "Rotationaries", "c": "Alameda", "y": "Fremont", "h": 0, "first": 2023, "last": 2026, "ys": {"2023": 55, "2024": 615, "2025": 427, "2026": 168}}, "9125": {"n": "Mechanical Magicians", "c": "Alameda", "y": "Newark", "h": 0, "first": 2023, "last": 2026, "ys": {"2023": 784, "2024": 259, "2025": 385, "2026": 96}}, "9172": {"n": "Robo-Sharks", "c": "Los Angeles", "y": "Los Angeles", "h": 1, "first": 2023, "last": 2024, "ys": {"2023": 26, "2024": 64}}, "9202": {"n": "Silicon Valley Technos", "c": "Santa Clara", "y": "San Jose", "h": 0, "first": 2023, "last": 2025, "ys": {"2023": 494, "2024": 263, "2025": 62}}, "9471": {"n": "EF Academy", "c": "Los Angeles", "y": "Pasadena", "h": 1, "first": 2024, "last": 2026, "ys": {"2024": 88, "2025": 253, "2026": 58}}, "9505": {"n": "Vyserions", "c": "Los Angeles", "y": "Los Angeles", "h": 1, "first": 2024, "last": 2026, "ys": {"2024": 298, "2025": 201, "2026": 82}}, "9538": {"n": "Stallions", "c": "Los Angeles", "y": "Castaic", "h": 1, "first": 2024, "last": 2024, "ys": {"2024": 49}}, "9696": {"n": "Hamichanics", "c": "Los Angeles", "y": "Los Angeles", "h": 1, "first": 2024, "last": 2026, "ys": {"2024": 35, "2026": 103}}, "9706": {"n": "R^3   (Redwood Ranger Robotics)", "c": "Tulare", "y": "Visalia", "h": 0, "first": 2024, "last": 2026, "ys": {"2024": 430, "2025": 243, "2026": 79}}, "9730": {"n": "Metal Maniacs", "c": "San Diego", "y": "Escondido", "h": 1, "first": 2024, "last": 2026, "ys": {"2024": 67, "2025": 152, "2026": 355}}, "9781": {"n": "Northgate Deep-Sea Welders Union", "c": "Contra Costa", "y": "Walnut Creek", "h": 0, "first": 2024, "last": 2025, "ys": {"2024": 103, "2025": 55}}, "10059": {"n": "Tech On Titans", "c": "Santa Clara", "y": "San Jose", "h": 0, "first": 2025, "last": 2026, "ys": {"2025": 45, "2026": 372}}, "10147": {"n": "ArmBots", "c": "Los Angeles", "y": "Glendale", "h": 1, "first": 2025, "last": 2026, "ys": {"2025": 340, "2026": 6}}, "10166": {"n": "Thunder Vikes", "c": "Ventura", "y": "Port Hueneme", "h": 1, "first": 2025, "last": 2026, "ys": {"2025": 65, "2026": 27}}, "10221": {"n": "#1 Sea Bass", "c": "San Francisco", "y": "San Francisco", "h": 0, "first": 2025, "last": 2026, "ys": {"2025": 69, "2026": 334}}, "10336": {"n": "BHA Tigers", "c": "San Diego", "y": "San Diego", "h": 1, "first": 2025, "last": 2026, "ys": {"2025": 76, "2026": 289}}, "10625": {"n": "BuzzFusion", "c": "Imperial", "y": "Calipatria", "h": 1, "first": 2025, "last": 2026, "ys": {"2025": 83, "2026": 268}}, "10936": {"n": "Hooverstan", "c": "Los Angeles", "y": "Glendale", "h": 1, "first": 2026, "last": 2026, "ys": {"2026": 72}}, "11247": {"n": "Alisal High School Robotics Team", "c": "Monterey", "y": "Salinas", "h": 0, "first": 2026, "last": 2026, "ys": {"2026": 89}}}};</script>
+<script>
+(function () {
+  const D = window.DATA;
+  const rows = buildRows(D);
+  const state = { half: "all", only2026: false, key: "team", dir: 1 };
+
+  const COLS = [
+    { key: "team",    label: "Team",   cls: "num" },
+    { key: "name",    label: "Name" },
+    { key: "county",  label: "County" },
+    { key: "city",    label: "City" },
+    { key: "half",    label: "Area" },
+    { key: "overall", label: "Overall", cls: "num" },
+    ...D.years.map(y => ({ key: String(y), label: String(y), cls: "num" })),
+  ];
+  const CLS = ["bottom10", "below", "above"];
+  const pctText = p => (p * 100).toFixed(0) + "%";
+
+  const hrow = document.getElementById("hrow");
+  hrow.innerHTML = COLS.map(c =>
+    `<th class="${c.cls || ""}" data-key="${c.key}"><button type="button">${c.label}<span class="arw">▲</span></button></th>`
+  ).join("");
+  hrow.querySelectorAll("th").forEach(th => {
+    th.querySelector("button").addEventListener("click", () => {
+      const k = th.dataset.key;
+      // Re-clicking the active column flips it; a new column starts ascending.
+      state.dir = state.key === k ? -state.dir : 1;
+      state.key = k;
+      render();
+    });
+  });
+
+  function cellHTML(rec, y) {
+    const s = cellState(rec, y);
+    if (s.kind === "pct")
+      return `<td class="cell c-${CLS[s.bucket]}" title="${pctText(s.p)} of California, ${y}">${pctText(s.p)}</td>`;
+    if (s.kind === "gone")
+      return `<td class="cell c-gone" title="No season since ${rec.last}">gone</td>`;
+    if (s.kind === "gap")
+      return `<td class="cell c-notyet" title="Sat out ${y}; played before and after">out</td>`;
+    return `<td class="cell c-notyet" title="Not yet a team — first season ${rec.first}">—</td>`;
+  }
+
+  function render() {
+    const view = sortRows(filterRows(rows, { half: state.half, only2026: state.only2026 }),
+                          state.key, state.dir);
+    document.getElementById("tbody").innerHTML = view.map(r => `<tr>
+      <td class="team num">${r.team}</td>
+      <td class="name">${r.n.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</td>
+      <td>${r.c}</td>
+      <td>${r.y}</td>
+      <td class="${r.h ? "half-s" : "half-n"}">${r.h ? "Southern" : "Northern"}</td>
+      <td class="cell c-${CLS[bucketOf(r.overall)]}">${pctText(r.overall)}</td>
+      ${D.years.map(y => cellHTML(r, y)).join("")}
+    </tr>`).join("");
+
+    document.getElementById("empty").hidden = view.length > 0;
+    const nSoc = view.filter(r => r.h === 1).length;
+    document.getElementById("count").textContent =
+      `${view.length} team${view.length === 1 ? "" : "s"} · ${view.length - nSoc} northern / ${nSoc} southern`;
+
+    hrow.querySelectorAll("th").forEach(th => {
+      const on = th.dataset.key === state.key;
+      if (on) th.setAttribute("aria-sort", state.dir === 1 ? "ascending" : "descending");
+      else th.removeAttribute("aria-sort");
+      th.querySelector(".arw").textContent = state.dir === 1 ? "▲" : "▼";
+    });
+  }
+
+  function seg(id, fn) {
+    const el = document.getElementById(id);
+    el.addEventListener("click", e => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      el.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+      fn(b);
+      render();
+    });
+  }
+  seg("half", b => { state.half = b.dataset.h; });
+  seg("only26", b => { state.only2026 = b.dataset.v === "1"; });
+
+  // The sticky column header pins directly under the site header, which wraps and changes height
+  // with viewport width — so measure it rather than hardcoding an offset.
+  const site = document.querySelector("header.top");
+  const setHeadH = () =>
+    document.documentElement.style.setProperty("--head-h", site.offsetHeight + "px");
+  new ResizeObserver(setHeadH).observe(site);
+  setHeadH();
+
+  if (D.pull_date) document.getElementById("pull").textContent = "Data pulled " + D.pull_date + ".";
+  render();
+})();
+</script>
+</body>
+</html>
