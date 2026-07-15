@@ -3,6 +3,8 @@
 Does a team's competitive success **within its region** relate to how long it survives? A single
 self-contained page, **[`competitiveness.html`](competitiveness.html)** — hand-rolled D3, embedded
 data, all client-side. Companion to [`../longevity/`](../longevity/); cross-linked, same Pages site.
+[`../california/`](../california/) applies this analysis's bottom-decile finding to a concrete list
+of California teams.
 
 Design spec: [`../docs/superpowers/specs/2026-07-14-competitiveness-survival-design.md`](../docs/superpowers/specs/2026-07-14-competitiveness-survival-design.md).
 
@@ -27,9 +29,9 @@ pull_epa.py  ──►  epa.json  ─┐
 ## Rebuild
 
 ```bash
-python3 competitiveness/pull_epa.py    # cached; needs ~/thebluealliance… not required (Statbotics only)
-python3 competitiveness/build.py       # writes data.json + competitiveness.html
-node    competitiveness/compute.test.mjs
+python3 competitiveness/pull_epa.py     # cached; no API key needed (Statbotics is open)
+python3 competitiveness/build.py        # writes data.json + competitiveness.html
+node    competitiveness/compute.test.mjs   # golden-value tests — must print ALL PASS
 ```
 
 ## Method (short)

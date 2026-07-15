@@ -164,4 +164,5 @@ t("the five cell states each have a distinct color", () => {
   assert.equal(new Set(fgs).size, fgs.length);
 });
 
-console.log(`\n${n} tests passed`);
+// Matches the sibling suites' convention: a bare `node compute.test.mjs` prints ALL PASS or throws.
+console.log(`\n${n} tests\nALL PASS`);

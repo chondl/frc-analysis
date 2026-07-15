@@ -27,9 +27,9 @@ pull_teams.py ──────────────────────
 ## Rebuild
 
 ```bash
-python3 california/pull_teams.py   # cached; needs ~/thebluealliance_api_key.txt
-python3 california/build.py        # writes data.json + california.html
-node    california/compute.test.mjs
+python3 california/pull_teams.py     # cached; needs ~/thebluealliance_api_key.txt
+python3 california/build.py          # writes data.json + california.html
+node    california/compute.test.mjs  # golden-value tests — must print ALL PASS
 ```
 
 ## Method (short)
